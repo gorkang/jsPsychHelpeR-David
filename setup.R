@@ -12,15 +12,15 @@
   }
 
   # You may need to install these manually
-  # install.packages("remotes")
-  # remotes::install_github("wlandau/targets")
-  # remotes::install_github("wlandau/tarchetypes")
+  install.packages("remotes")
+  remotes::install_github("wlandau/targets")
+  remotes::install_github("wlandau/tarchetypes")
   # remotes::install_github("gadenbuie/shrtcts")
   
   
   # Make sure all the necessary folders exist -----------------------------
   
-  necessary_folders = c("data", "output/data", "output/plots", "output/tables", "output/tests_outputs", "vault")
+  necessary_folders = c("data", "output/data", "output/plots", "output/tables", "output/tests_outputs", ".vault")
   if (all(necessary_folders %in% dir(recursive = TRUE, include.dirs = TRUE))) {
     cat(crayon::green("All the necessary folders are present"))
   } else {
