@@ -20,7 +20,7 @@ prepare_AIM_gsheet <- function(df_FORM, short_name_scale_str) {
   # DEBUG
   # df_FORM = DF_wide_RAW_DIR
   # debug_function(prepare_AIM)
-  # if(!exists("df_FORM")) df_FORM = read_rds(".vault/data/df_FORM_RAW.rds")
+  # if(!exists("df_FORM")) df_FORM = read_rds(".vault/data/df_FORM.rds")
   # if(!exists("short_name_scale_str")) short_name_scale_str = "AIM"
   
 
@@ -61,7 +61,7 @@ DF_long_RAW =
         RAW == "Básica incompleta; primaria o preparatoria incompleta." ~ 2,
         RAW == "Básica completa; primaria o preparatoria completa." ~ 3,
         RAW == "Media científico humanista o media técnico profesional incompleta; humanidades incompleta." ~ 4,
-        RAW == "Media científico humanista o media técnico profesional completa; humanidades completas." ~ 5,
+        RAW == "Media científico humanista o media técnico profesional completa; humanidades completa." ~ 5,
         RAW == "Instituto técnico (CFT) o instituto profesional incompleto (carreras de 1 a 3 años)." ~ 6,
         RAW == "Instituto técnico (CFT) o instituto profesional completo (carreras de 1 a 3 años); hasta suboficial de FFAA y Carabineros." ~ 7,
         RAW == "Universitaria incompleta (carreras de 4 o más años)." ~ 8,
@@ -76,8 +76,9 @@ DF_long_RAW =
         RAW == "Empleados de oficina públicos y privados." ~ 6,
         RAW == "Técnicos y profesionales de nivel medio (incluye hasta suboficiales FFAA y Carabineros)." ~ 7,
         RAW == "Profesionales, científicos e intelectuales." ~ 8,
-        RAW == "Alto ejecutivo (gerente general o gerente de área o sector) de empresa privadas o pública- Director o dueño de grandes empresa- Alto directivo del poder ejecutivo, de los cuerpos legislativos y la administración pública (incluye oficiales de FFAA y Carabineros)." ~ 9,
-        RAW == "Otros grupos no identificados (incluye rentistas, incapacitados, etc.)" ~ 10,
+        RAW == "Alto ejecutivo (gerente general o gerente de área o sector) de empresa privadas o públicas. Director o dueño de grandes empresas. Alto directivo del poder ejecutivo, de los cuerpos legislativos y la administración pública (incluye oficiales de FFAA y Carabineros)." ~ 9,
+        RAW == "Otros grupos no identificados (incluye rentistas, personas en situación de discapacidad, etc.)" ~ 10,
+        
         
         trialid == "AIM_03" & as.numeric(RAW) == 0 ~ 1, # ESTA OPCION NO DEBERIA SER POSIBLE
         trialid == "AIM_03" & as.numeric(RAW) == 1 ~ 1,
@@ -86,7 +87,7 @@ DF_long_RAW =
         trialid == "AIM_03" & as.numeric(RAW) == 4 ~ 4,
         trialid == "AIM_03" & as.numeric(RAW) == 5 ~ 5,
         trialid == "AIM_03" & as.numeric(RAW) == 6 ~ 6,
-        trialid == "AIM_03" & as.numeric(RAW) >= 7 ~ 7,
+        trialid == "AIM_03" & RAW == "7 o mas" ~ 7,
         
         RAW == "Menos de 120 mil" ~ 1, 
         RAW == "120 mil – 207 mil" ~ 2, 

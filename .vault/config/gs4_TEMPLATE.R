@@ -1,5 +1,7 @@
 # TEMPLATE file to authenticate a google sheets user
 # GO to https://console.cloud.google.com/apis/credentials and follow instructions
+  # + CREATE CREDENTIALS -> API key
+  # + CREATE CREDENTIALS -> OAuth Client ID
 
 library(googlesheets4)
 

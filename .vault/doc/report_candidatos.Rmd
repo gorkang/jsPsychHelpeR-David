@@ -5,12 +5,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-## TODO
-- ADD table with mean age by group and sex to be able to check how biased the groups are.
-
-
 ```{r setup, include=FALSE}
-
 knitr::opts_chunk$set(echo = TRUE)
 df_FORM_RAW = read_rds(here::here(".vault/data/df_FORM_RAW.rds"))
 df_AIM = read_rds(here::here(".vault/data/df_AIM.rds")) %>% select(RUT, AIM_DIRt)
@@ -93,20 +88,31 @@ table_done =
          # MARGEN_EXP = GOAL_EXP + n_EXP_CALL,
          # MARGEN_CON = GOAL_CON + n_CON_CALL) %>% 
          # Candidatos = ) 
-  select(edad, sexo, matches("OK"), matches("GOAL"), matches("CALL"))
+  select(edad, sexo, CONa_OK, CONc_OK, EXP_OK, GOAL_CONa, GOAL_CONc, GOAL_EXP,	CONa_CALL, CONc_CALL, EXP_CALL) %>% 
+  select(-matches("NA_", ignore.case = FALSE))
 
 ```
-
-
-### DONE
-
+   
+  
 ```{r echo=FALSE}
-knitr::kable(table_done)
+# knitr::kable(table_done)
+DT::datatable(table_done, options = list(dom = 'ti'), rownames = FALSE) %>% 
+      DT::formatStyle(
+        columns = c("GOAL_CONa", "GOAL_CONc", "GOAL_EXP"), 
+        target = "cell",
+        color = DT::styleInterval(cuts = c(-10, 0), values = c("red", "orange", "green"))
+        # fontWeight = "bold"
+    )
 ```
 **CON_OK**: Grupo control completados; **EXP_OK**: Grupo experimental completados  
-**CON_CALL**: Grupo control esperando llamada; **EXP_CALL**: Grupo experimental esperando llamada  
 **GOAL_CON**: Cuantos faltan del grupo control; **GOAL_EXP**: Cuantos faltan del grupo experimental    
+**CON_CALL**: Grupo control esperando llamada; **EXP_CALL**: Grupo experimental esperando llamada  
 
+- EXP: Vulnerable group: groups d y e 50% of sample
+- CONa: Non-vulnerable group: groups c3 y c2 25% of sample
+- CONc: Non-vulnerable group: groups ab, c1a y c1b 25% of sample
+
+---   
 
 ### Candidatos
 

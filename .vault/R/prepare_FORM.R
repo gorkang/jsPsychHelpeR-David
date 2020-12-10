@@ -25,14 +25,14 @@ prepare_FORM <- function(df_SDG, short_name_scale_str) {
   # CHECK if we have the credentials
   if (email_googlesheets != "") {
     
-    cat(crayon::yellow("Using user", email_googlesheets, "to check Google sheets"))  
+    cat(crayon::yellow("Using user", email_googlesheets, "to check Google sheets\n"))  
     # googlesheets4::gs4_auth(scopes = "https://www.googleapis.com/auth/spreadsheets.readonly")
     googlesheets4::gs4_auth(email_googlesheets)
     
   } else {
     
     cat("", 
-        crayon::yellow("Need to set email_googlesheets in", crayon::red(".vault/R/prepare_FORM.R"), "to check Google sheets \n", 
+        crayon::yellow("Need to set email_googlesheets in", crayon::red(".vault/R/prepare_FORM.R"), "to check Google sheets\n", 
         "Remember to also configure .vault/R/gs4_TEMPLATE.R\n")) 
     stop("NEED to set email_googlesheets in .vault/R/prepare_FORM.R")
     
@@ -99,7 +99,7 @@ prepare_FORM <- function(df_SDG, short_name_scale_str) {
   
   
   # Save files --------------------------------------------------------------
-  save_files(df_FORM, short_name_scale = "df_FORM", is_scale = TRUE, is_sensitive = TRUE)
+  save_files(df_FORM, short_name_scale = "FORM", is_scale = TRUE, is_sensitive = TRUE)
   
   # Output of function ---------------------------------------------------------
   return(df_FORM) 
