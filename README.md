@@ -39,3 +39,6 @@ To see more detail about any specific step, you can:
 -   **Plots** and **tables** are in `output/plots` and `output/tables` respectively.
 
 -   **Dataframes** for different stages of data processing can be seen in `output/data`
+
+
+## NOTES

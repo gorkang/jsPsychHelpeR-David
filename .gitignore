@@ -5,3 +5,5 @@
 .vault/data
 .vault/config/gs4.R
 .vault/doc/report_candidatos.html
+data/
+output/
