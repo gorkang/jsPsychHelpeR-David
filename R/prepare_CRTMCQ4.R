@@ -65,7 +65,7 @@ prepare_CRTMCQ4 <- function(DF_clean, short_name_scale_str) {
           trialid == "CRTMCQ4_03" & RAW == "47 días" ~ "reflective",
           trialid == "CRTMCQ4_04" & RAW == "4 días" ~ "reflective",
           trialid == "CRTMCQ4_05" & RAW == "29 estudiantes" ~ "reflective",
-          trialid == "CRTMCQ4_06" & RAW == "20000" ~ "reflective",
+          trialid == "CRTMCQ4_06" & RAW == "$20.000" ~ "reflective",
           trialid == "CRTMCQ4_07" & RAW == "ha perdido dinero." ~ "reflective",
           
           trialid == "CRTMCQ4_01" & RAW == "100 pesos" ~ "intuitive",
@@ -73,7 +73,7 @@ prepare_CRTMCQ4 <- function(DF_clean, short_name_scale_str) {
           trialid == "CRTMCQ4_03" & RAW == "24 días" ~ "intuitive",
           trialid == "CRTMCQ4_04" & RAW == "9 días" ~ "intuitive",
           trialid == "CRTMCQ4_05" & RAW == "30 estudiantes" ~ "intuitive",
-          trialid == "CRTMCQ4_06" & RAW == "10000" ~ "intuitive",
+          trialid == "CRTMCQ4_06" & RAW == "$10.000" ~ "intuitive",
           trialid == "CRTMCQ4_07" & RAW == "ha ganado dinero." ~ "intuitive",
           is.na(RAW) ~ NA_character_,
           grepl(items_to_ignore, trialid) ~ NA_character_,
