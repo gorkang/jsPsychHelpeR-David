@@ -1,16 +1,21 @@
 
 # Install packages ---------------------------------------------------------
 
-  # remotes::install_github("wlandau/targets")
-  # remotes::install_github("wlandau/tarchetypes")
-  # remotes::install_github("gadenbuie/shrtcts")
+  source("setup.R")
 
-# rsync -av --rsh=ssh user-cscn@138.197.236.86:~/apps/uai-cscn/public/lab/public/instruments/protocols/1/.data/ /home/emrys/gorkang@gmail.com/RESEARCH/PROYECTOS/2020-David-Fondecyt/jsPsych-David/jsPsychHelpeR-David/data/
-  
-  
+
+# Sync data from server ---------------------------------------------------
+
+  # FORM, protocol 5. [This is sentitive data]
+  system('rsync -av --rsh=ssh user-cscn@138.197.236.86:~/apps/uai-cscn/public/lab/public/instruments/protocols/5/.data/ /home/emrys/gorkang@gmail.com/RESEARCH/PROYECTOS/2020-David-Fondecyt/jsPsych-David/jsPsychHelpeR-David/.vault/raw_data/')
+
+  # Protocol 1.
+  system('rsync -av --rsh=ssh user-cscn@138.197.236.86:~/apps/uai-cscn/public/lab/public/instruments/protocols/1/.data/ /home/emrys/gorkang@gmail.com/RESEARCH/PROYECTOS/2020-David-Fondecyt/jsPsych-David/jsPsychHelpeR-David/data/')
+
+
 # Run project --------------------------------------------------------------
 
-  # Recreates _packages.R with the above packages (so renv founds them). Should be launched after tar_option_set()
+  # Recreates _packages.R with the above packages (so renv founds them)
   targets::tar_renv() # Need to run renv::init() if anything changes
 
   targets::tar_make()
@@ -28,8 +33,8 @@
 
 
 # Invalidate a specific target (to rerun it) -----------------------------
-  
-  targets::tar_invalidate(matches("TESTS"))
+
+  targets::tar_invalidate(matches("input_files"))
 
 
 # See warnings in all functions ------------------------------------------
