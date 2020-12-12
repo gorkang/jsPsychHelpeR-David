@@ -39,6 +39,7 @@
   
 targets <- list(
   
+  
   # _Read files --------------------------------------------------------------
   
   # RAW data
@@ -53,12 +54,12 @@ targets <- list(
 
   
   # _Prepare tasks -----------------------------------------------------------
-  
-  # Use R/prepare_template.R to create new preparation_scripts
-    # [TODO]: Each of the individual tasks should have specific hardcoded TESTS!
-    # [REMEMBER]: the target name needs to be ==  df_[short_name_scale_str]
+
   tar_target(df_SDG, prepare_SDG(DF_clean, short_name_scale_str = "SDG"), priority = 1),
-  tar_target(df_AIM, run_sensitive_data(df_SDG, run_online_FORM = TRUE)), # [REMEMBER]: run_online_FORM = TRUE . Given API limits of googlesheets4, we need to minimize calls
+
+  # Sensitive tasks  
+  tar_target(input_files_sensitive, list.files(path = ".vault/raw_data", pattern="csv", full.names = TRUE), format = "file"),
+  tar_target(df_AIM, run_sensitive_data(input_files_sensitive, df_SDG)),
   
   tar_target(df_Cov19Q, prepare_Cov19Q(DF_clean, short_name_scale_str = "Cov19Q")),
   tar_target(df_CRS, prepare_CRS(DF_clean, short_name_scale_str = "CRS")),
