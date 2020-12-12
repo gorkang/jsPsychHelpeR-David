@@ -14,11 +14,13 @@
 ##' @return
 ##' @author gorkang
 ##' @export
-prepare_AIM <- function(DF_clean, short_name_scale_str) {
+prepare_AIM <- function(DF_clean_sensitive, DF_DICCIONARY_id, short_name_scale_str) {
 
   # DEBUG
   # debug_function(prepare_AIM)
+  # DF_clean = DF_clean_sensitive
 
+  
   # OUTSIDE FILES -----------------------------------------------------------
   DF_lookup = read_csv("R/prepare_AIM-lookup.csv", 
                        col_types = 
@@ -36,7 +38,7 @@ prepare_AIM <- function(DF_clean, short_name_scale_str) {
                      help_names = FALSE) # help_names = FALSE once the script is ready
   
   # Create long -------------------------------------------------------------
-  DF_long_RAW = create_raw_long(DF_clean, short_name_scale = short_name_scale_str, numeric_responses = FALSE)
+  DF_long_RAW = create_raw_long(DF_clean_sensitive, short_name_scale = short_name_scale_str, numeric_responses = FALSE)
   
   # Show number of items, responses, etc. [uncomment to help prepare the test] 
   # prepare_helper(DF_long_RAW, show_trialid_questiontext = TRUE)
@@ -187,6 +189,16 @@ prepare_AIM <- function(DF_clean, short_name_scale_str) {
     
     left_join(DF_lookup, by = c("AIM_01_DIR", "AIM_02_DIR", "AIM_TramoIngreso_DIRd"))
     
+  
+  
+  ## GET protocol id ---------------
+  DF_wide_RAW_DIR = 
+    DF_wide_RAW_DIR %>% 
+    rename(id_form = id) %>% 
+    left_join(DF_DICCIONARY_id, by = "id_form") %>% 
+    select(id, RUT, everything())
+  
+  
   # [END ADAPT]: ***************************************************************
   # ****************************************************************************
 
@@ -194,10 +206,19 @@ prepare_AIM <- function(DF_clean, short_name_scale_str) {
   # CHECK NAs -------------------------------------------------------------------
   check_NAs(DF_wide_RAW_DIR)
   
+  
   # Save files --------------------------------------------------------------
+  
+  # Save sensitive version (with RUT) in .vault
+  save_files(DF_wide_RAW_DIR, short_name_scale = short_name_scale_str, is_scale = TRUE, is_sensitive = TRUE)
+  
+  # Save clean version (only id's) in outputs/data
+  DF_wide_RAW_DIR = DF_wide_RAW_DIR %>% select(-RUT, -id_form) %>% drop_na(id)
   save_files(DF_wide_RAW_DIR, short_name_scale = short_name_scale_str, is_scale = TRUE)
+
   
   # Output of function ---------------------------------------------------------
   return(DF_wide_RAW_DIR) 
- 
+  # return(DF_wide_RAW_DIR %>% select(-RUT) %>% drop_na(id)) 
+  
 }
