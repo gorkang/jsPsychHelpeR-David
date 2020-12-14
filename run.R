@@ -7,10 +7,10 @@
 # Sync data from server ---------------------------------------------------
 
   # FORM, protocol 5. [This is sentitive data]
-  system('rsync -av --rsh=ssh user-cscn@138.197.236.86:~/apps/uai-cscn/public/lab/public/instruments/protocols/5/.data/ /home/emrys/gorkang@gmail.com/RESEARCH/PROYECTOS/2020-David-Fondecyt/jsPsych-David/jsPsychHelpeR-David/.vault/raw_data/')
+  id_protocol = 5; system(paste0('rsync -av --rsh=ssh user-cscn@138.197.236.86:~/apps/uai-cscn/public/lab/public/instruments/protocols/', id_protocol, '/.data/ /home/emrys/gorkang@gmail.com/RESEARCH/PROYECTOS/2020-David-Fondecyt/jsPsych-David/jsPsychHelpeR-David/.vault/raw_data/'))
 
   # Protocol 1.
-  system('rsync -av --rsh=ssh user-cscn@138.197.236.86:~/apps/uai-cscn/public/lab/public/instruments/protocols/1/.data/ /home/emrys/gorkang@gmail.com/RESEARCH/PROYECTOS/2020-David-Fondecyt/jsPsych-David/jsPsychHelpeR-David/data/')
+  id_protocol = 1; system('rsync -av --rsh=ssh user-cscn@138.197.236.86:~/apps/uai-cscn/public/lab/public/instruments/protocols/', id_protocol, '/.data/ /home/emrys/gorkang@gmail.com/RESEARCH/PROYECTOS/2020-David-Fondecyt/jsPsych-David/jsPsychHelpeR-David/data/')
 
 
 # Run project --------------------------------------------------------------
