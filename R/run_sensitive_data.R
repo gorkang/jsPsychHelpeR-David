@@ -4,9 +4,10 @@
 
 run_sensitive_data <- function(input_files_sensitive, df_SDG) {
 
-
   # DEBUG
-  # if (!exists("run_online_FORM")) run_online_FORM = TRUE
+  # targets::tar_load("df_SDG")
+  # targets::tar_load("input_files_sensitive")
+  
 
   DF_raw_sensitive = read_data(input_files_sensitive, anonymize = FALSE)
   DF_clean_sensitive = create_clean_data(DF_raw_sensitive)
@@ -39,6 +40,11 @@ run_sensitive_data <- function(input_files_sensitive, df_SDG) {
   DF_AIM_raw = prepare_AIM(DF_clean_sensitive, DF_DICCIONARY_id, short_name_scale_str = "AIM")
   
 
+
+  # FORM Status -----------------------------------------------------------
+  files_status = list.files(path = ".vault/data_6", pattern="csv", full.names = TRUE)
+  DF_FORM6 = prepare_FORM6(files_status, DF_DICCIONARY_id, short_name_scale_str = "FORM6")
+  
   
   # Report ------------------------------------------------------------------
   cat(crayon::yellow("Preparando report_candidatos...\n"))
