@@ -1,0 +1,4 @@
+view_history,rt,trialid,trial_type,trial_index,time_elapsed,internal_node_id,responses,stimulus
+"[{""page_index"":0,""viewing_time"":981}]",981,Instructions,instructions,0,985,0.0-0.0,,
+,1874.08000000141,FORM6_01,survey-html-form,1,2863,0.0-1.0,"{""Q0"":""placeholder""}",
+,5114,FORM6_02,survey-text,2,7986,0.0-2.0,"{""Q0"":""placeholder""}","{""Q0"":""NOTAS""}"

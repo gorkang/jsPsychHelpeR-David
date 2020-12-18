@@ -1,0 +1,15 @@
+view_history,rt,trialid,trial_type,trial_index,time_elapsed,internal_node_id,stimulus,responses
+"[{""page_index"":0,""viewing_time"":33972}]",33973,Instructions,instructions,0,33973,0.0-0.0,,
+,10174,FORM5_01,survey-text,1,44155,0.0-1.0,"{""Q0"":""Para continuar ingrese nuevamente su rut Completo (sin puntos ni guión y con dígito verificador).  Si su rut termina con K, reemplácelo por un 0""}","{""Q0"":""99999999""}"
+,9080.41999999841,FORM5_02,survey-html-form,2,53237,0.0-2.0,,"{""Q0"":""correo@gmail.com""}"
+,11279,FORM5_03,survey-text,3,64520,0.0-3.0,"{""Q0"":""Nombre completo""}","{""Q0"":""Nombre""}"
+,4232,FORM5_04,survey-text,4,68756,0.0-4.0,"{""Q0"":""Edad""}","{""Q0"":""22""}"
+,3428,FORM5_05,survey-multi-choice-vertical,5,72187,0.0-5.0,"{""Q0"":""Género""}","{""Q0"":"" Femenino""}"
+,8529095,FORM5_06,survey-text,6,8601292,0.0-6.0,"{""Q0"":""Nivel educacional en años de estudio  (Considere hasta el año realizado. Por ejemplo, si terminó 4to medio y no realizó nada más, poner 12 años. Si realizo dos años de formación técnica después de terminar 4to medio, poner 14 años. Si llegó solo hasta 3er medio, poner 10 ya que terminó 2do medio. etc.)""}","{""Q0"":""21""}"
+,7564.74499999918,FORM5_07,survey-html-form,7,8608862,0.0-7.0,,"{""Q0"":""Vitacura""}"
+,20841,FORM5_08,survey-text,8,8629708,0.0-8.0,"{""Q0"":""Introduce tu número de celular (9 1234 5678)""}","{""Q0"":""999999999""}"
+,5584,FORM5_09,survey-multi-choice-vertical,9,8635294,0.0-9.0,"{""Q0"":""He sido diagnosticado con alguna enfermedad psiquiátrica.""}","{""Q0"":"" Sí""}"
+,56114,FORM5_10,survey-text,10,8691416,0.0-10.0-0.0,"{""Q0"":""Si su respuesta anterior fue SÍ, indicar el año en que usted fue diagnosticado y tipo de diagnóstico (por ejemplo: 2018 ansiedad, 2019 depresión, 2020 esquizofrenia)""}","{""Q0"":""2020 protocolo""}"
+,10554,FORM5_11,survey-multi-choice-vertical,11,8701971,0.0-11.0,"{""Q0"":""¿Se encuentra actualmente bajo algún tratamiento psiquiátrico? (ej: usa medicación; está bajo terapia psiquiátrica y/o control médico)""}","{""Q0"":"" No""}"
+,5492,FORM5_13,survey-multi-choice-vertical,12,8707466,0.0-13.0,"{""Q0"":""¿Ha tenido que acudir por ayuda especializada, o tiene la necesidad de buscarla, por consumo problemático de alcohol y/o drogas?""}","{""Q0"":"" No""}"
+"[{""page_index"":0,""viewing_time"":3694}]",3695,Instructions,instructions,13,8711162,0.0-15.0,,
