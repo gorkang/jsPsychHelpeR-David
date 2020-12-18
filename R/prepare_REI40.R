@@ -18,7 +18,25 @@ prepare_REI40 <- function(DF_clean, short_name_scale_str) {
 
   # DEBUG
   # debug_function(prepare_REI40)
-
+  
+  
+  # [ADAPT]: Items to ignore and reverse ---------------------------------------
+  # ****************************************************************************
+  
+  items_to_ignore = c("00") # Ignore the following items: If nothing to ignore, keep "00"
+  items_to_reverse = c("01", "02", "03", "04", "05", "11", "13", "15", "17", "19", "21", "26", "28", "30", "34", "36", "37", "38") # Reverse the following items: If nothing to ignore, keep "00"
+  
+  items_DIRd1 = c("01", "02", "03", "04", "05", "06", "07", "08", "09", "10")
+  items_DIRd2 = c("11", "12", "13", "14", "15", "16", "17", "18", "19", "20")
+  items_DIRd3 = c("21", "22", "23", "24", "25", "26", "27", "28", "29", "30")
+  items_DIRd4 = c("31", "32", "33", "34", "35", "36", "37", "38", "39", "40")
+  items_DIRd5 = c("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20")
+  items_DIRd6 = c("21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40")
+  
+  # [END ADAPT]: ***************************************************************
+  # ****************************************************************************
+  
+  
   # Standardized names ------------------------------------------------------
   standardized_names(short_name_scale = short_name_scale_str, 
                      dimensions = c("RationalAbility", "RationalEngagement", "ExperientialAbility", "ExperiencialEngagement", "Rational", "Experiential"), # Use names of dimensions, "" or comment out line
@@ -49,7 +67,7 @@ prepare_REI40 <- function(DF_clean, short_name_scale_str) {
       DIR = 
         case_when(
           DIR == 9999 ~ DIR,
-          grepl("01|02|03|04|05|11|13|15|17|19|21|26|28|30|34|36|37|38", trialid) ~ (6 - DIR),
+          trialid %in% paste0(short_name_scale_str, "_", items_to_reverse) ~ (6 - DIR),
           TRUE ~ DIR
         )
     )
@@ -77,16 +95,16 @@ prepare_REI40 <- function(DF_clean, short_name_scale_str) {
 
     mutate(
 
-      # Score Dimensions (use 3 digit item numbers)
-      !!name_DIRd1 := rowMeans(select(., matches("01|02|03|04|05|06|07|08|09|10") & matches("_DIR$")), na.rm = TRUE),
-      !!name_DIRd2 := rowMeans(select(., matches("11|12|13|14|15|16|17|18|19|20") & matches("_DIR$")), na.rm = TRUE),
-      !!name_DIRd3 := rowMeans(select(., matches("21|22|23|24|25|26|27|28|29|30") & matches("_DIR$")), na.rm = TRUE),
-      !!name_DIRd4 := rowMeans(select(., matches("31|32|33|34|35|36|37|38|39|40") & matches("_DIR$")), na.rm = TRUE),
+      # Score Dimensions (see standardized_names(help_names = TRUE) for instructions)
+      !!name_DIRd1 := rowMeans(select(., paste0(short_name_scale_str, "_", items_DIRd1, "_DIR")), na.rm = TRUE), 
+      !!name_DIRd2 := rowMeans(select(., paste0(short_name_scale_str, "_", items_DIRd2, "_DIR")), na.rm = TRUE),
+      !!name_DIRd3 := rowMeans(select(., paste0(short_name_scale_str, "_", items_DIRd3, "_DIR")), na.rm = TRUE), 
+      !!name_DIRd4 := rowMeans(select(., paste0(short_name_scale_str, "_", items_DIRd4, "_DIR")), na.rm = TRUE), 
       
       # Meta-dimensions
-      !!name_DIRd5 := rowMeans(select(., matches("01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20") & matches("_DIR$")), na.rm = TRUE),
-      !!name_DIRd6 := rowMeans(select(., matches("21|22|23|24|25|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40") & matches("_DIR$")), na.rm = TRUE)
-      
+      !!name_DIRd5 := rowMeans(select(., paste0(short_name_scale_str, "_", items_DIRd5, "_DIR")), na.rm = TRUE), 
+      !!name_DIRd6 := rowMeans(select(., paste0(short_name_scale_str, "_", items_DIRd6, "_DIR")), na.rm = TRUE), 
+
       # Score Scale
       # !!name_DIRt := rowMeans(select(., matches("_DIR$")), na.rm = TRUE)
       
