@@ -40,7 +40,7 @@ read_data <- function(input_files, anonymize = FALSE) {
         project = gsub("^([0-9]{1,99})_.*.csv", "\\1", filename), # projectCode
         experimento = gsub("^[0-9]{1,99}_([a-zA-Z0-9]{1,99})_.*.csv", "\\1", filename), # shortname
         version = gsub("^[0-9]{1,99}_[a-zA-Z0-9]{1,99}_([a-zA-Z0-9]{1,99})_.*.csv", "\\1", filename), # version
-        datetime = gsub("^[0-9]{1,99}_[a-zA-Z0-9]{1,99}_[a-zA-Z0-9]{1,99}_([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2})_.*.csv", "\\1", filename), # fecha
+        datetime = gsub("^[0-9]{1,99}_[a-zA-Z0-9]{1,99}_[a-zA-Z0-9]{1,99}_([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}[0-9]{2}[0-9]{2})_.*.csv", "\\1", filename), # fecha
         
         stimulus = gsub('\\{"Q0":"|"\\}', '', stimulus), # Clean stimulus
         responses = gsub('"Q[0-9]"|&nbsp;|\u00A0', '', responses)
