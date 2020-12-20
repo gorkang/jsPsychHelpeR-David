@@ -23,10 +23,13 @@
 
   # Make sure all the necessary folders exist -----------------------------
   
-  necessary_folders = c("data", "output/data", "output/plots", "output/tables", "output/tests_outputs", ".vault", ".vault/data", ".vault/raw_data", ".vault/data_6")
+  necessary_folders = c("data", "output/data", "output/plots", "output/tables", "output/tests_outputs", ".vault", ".vault/output/data", ".vault/raw_data", ".vault/data_6")
   if (all(necessary_folders %in% dir(recursive = TRUE, include.dirs = TRUE, all.files = TRUE))) {
     cat(crayon::green("All the necessary folders are present\n"))
   } else {
     cat(crayon::yellow("Creating necessary folders: "), paste(necessary_folders, collapse = ", "), "\n")
     invisible(purrr::map(necessary_folders, dir.create, recursive = TRUE, showWarnings = FALSE))
   }
+
+  # if (webshot::is_phantomjs_installed() == FALSE) webshot::install_phantomjs()
+  

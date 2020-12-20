@@ -245,7 +245,7 @@ save_files <- function(DF, short_name_scale, is_scale = TRUE, is_sensitive = FAL
   
   # Select path based on nature of the data
   if (is_sensitive == TRUE) {
-    data_path = ".vault/data/"
+    data_path = ".vault/output/data/"
   } else {
     data_path = "output/data/"
   }
