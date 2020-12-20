@@ -58,7 +58,7 @@ targets <- list(
   tar_target(df_SDG, prepare_SDG(DF_clean, short_name_scale_str = "SDG"), priority = 1),
 
   # Sensitive tasks  
-  tar_target(input_files_sensitive, list.files(path = ".vault/raw_data", pattern="csv", full.names = TRUE), format = "file"),
+  tar_target(input_files_sensitive, list.files(path = ".vault/data_vault_5", pattern="csv", full.names = TRUE), format = "file"),
   tar_target(df_AIM, run_sensitive_data(input_files_sensitive, df_SDG)),
   
   tar_target(df_Cov19Q, prepare_Cov19Q(DF_clean, short_name_scale_str = "Cov19Q")),
