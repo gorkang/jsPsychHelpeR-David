@@ -1,4 +1,12 @@
 
+# Libraries ---------------------------------------------------------------
+
+library(dplyr)
+library(readr)
+library(tidyr)
+library(DT)
+
+
 # Read files --------------------------------------------------------------
 
 df_FORM_RAW = read_rds(here::here(".vault/output/data/df_FORM5.rds"))
