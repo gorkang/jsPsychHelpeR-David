@@ -7,16 +7,19 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-df_FORM_RAW = read_rds(here::here(".vault/data/df_FORM5.rds"))
-df_Status_RAW = read_rds(here::here(".vault/data/df_FORM6.rds"))
-df_AIM = read_rds(here::here(".vault/data/df_AIM.rds")) %>% select(RUT, AIM_DIRt)
+df_FORM_RAW = read_rds(here::here(".vault/output/data/df_FORM5.rds"))
+df_Status_RAW = read_rds(here::here(".vault/output/data/df_FORM6.rds"))
+df_AIM = read_rds(here::here(".vault/output/data/df_AIM.rds")) %>% select(RUT, AIM_DIRt)
+
+# df_FORM_RAW; df_Status_RAW; df_AIM
 ```
 
 ## Summary
 
 ```{r summary, include=FALSE}
 
-# df_FORM_RAW contains everyone that filled the form. In run_sensitive_data is joined by SDG (id/RUT). Only the ones that completed the experiment have id.
+# Read main df_FORM_RAW contains everyone that filled the form. 
+# In run_sensitive_data is joined by SDG (id/RUT). Only the ones that completed the experiment have id.
 
 DF = 
   df_FORM_RAW %>% 
@@ -38,8 +41,7 @@ DF =
             AIM_DIRt == "d" | AIM_DIRt == "e" ~ "EXP",
             AIM_DIRt == "c2" | AIM_DIRt == "c3" ~ "CONc",
             AIM_DIRt == "c1a" | AIM_DIRt == "c1b" | AIM_DIRt == "ab" ~ "CONa",
-            TRUE ~ NA_character_
-            ),
+            TRUE ~ NA_character_),
 
          edad = 
            case_when(
@@ -47,18 +49,19 @@ DF =
              between(edad, 34, 42) ~ "34-42",
              between(edad, 43, 50) ~ "43-50",
              edad < 25 ~ "demasiado joven",
-             edad > 50 ~ "demasiado viejo",
-           ),
+             edad > 50 ~ "demasiado viejo"),
          
          completed = 
            case_when(
              is.na(id) ~ "CALL",
-             TRUE ~ "OK"
-           )
+             TRUE ~ "OK")
          ) %>% 
+  
+  # Filter out by age, sex and socioeconomic group
   filter(sexo != "No binario") %>%
   filter(edad != "demasiado viejo" & edad != "demasiado joven") %>% 
   drop_na(grupo) %>% 
+  
   select(id, RUT, completed, edad, sexo, grupo, edad, telefono, email, name, comuna)
 
 
@@ -75,6 +78,9 @@ table_done_temp =
 # If we don't have certain types of people, create columns
 cols = c(CONc_CALL = 0, CONa_CALL = 0, EXP_CALL = 0, CONc_OK = 0, CONa_OK = 0, EXP_OK = 0)
 table_done_temp = tibble::add_column(table_done_temp, !!!cols[setdiff(names(cols), names(table_done_temp))]) 
+
+# If table is empty, create it
+if (nrow(table_done_temp) == 0) table_done_temp = tibble(edad = NA_character_, sexo = NA_character_, CONc_CALL = 0, CONa_CALL = 0,  EXP_CALL = 0,  CONc_OK = 0,  CONa_OK = 0,  EXP_OK = 0)
   
 # Vulnerable group: groups d y e 50% of sample
 # Non-vulnerable group: groups c3 y c2 25% of sample
@@ -82,7 +88,9 @@ table_done_temp = tibble::add_column(table_done_temp, !!!cols[setdiff(names(cols
   
 table_done = 
   table_done_temp %>% 
+  complete(sexo = c("Masculino", "Femenino")) %>% 
   complete(edad = c("25-33", "34-42", "43-50"), nesting(sexo)) %>% 
+  drop_na(edad, sexo) %>% 
   replace_na(list(CONc_CALL = 0, CONa_CALL = 0, EXP_CALL = 0, CONc_OK = 0, CONa_OK = 0, EXP_OK = 0)) %>% 
   mutate(GOAL_CONa = (CONa_OK - 20),
          GOAL_CONc = (CONc_OK - 20),
@@ -144,6 +152,7 @@ DT::datatable(table_candidatos_long, filter = 'top',
                 dom = 'tip',
                 # autoWidth = TRUE,
   columnDefs = list(list(width = '300px', targets = c("status", "notes")))))
+
 ```
 
 
@@ -166,4 +175,3 @@ DT::datatable(DF_completed, filter = 'top',
                 dom = 'tip',
                 autoWidth = TRUE))
 ```
-
