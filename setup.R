@@ -10,6 +10,8 @@
   
 # Make sure all packages are present --------------------------------------
 
+  if (!require('rmarkdown')) install.packages('rmarkdown'); library('rmarkdown')
+  
   source("_targets.R")
   missing_packages = packages_to_load[!packages_to_load %in% installed.packages()[,1]]
   
