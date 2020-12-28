@@ -45,6 +45,7 @@ targets <- list(
   # RAW data
   tar_target(input_files, list.files(path = "data", pattern="csv", full.names = TRUE), format = "file"), #, format = "file" (IF files in vault/ first run fails)
   tar_target(DF_raw, read_data(input_files, anonymize = FALSE)),
+  tar_target(tests_DF_raw, tests_DF_raw(DF_raw), priority = 1),
   
   # Cleaned data
   tar_target(DF_clean, create_clean_data(DF_raw)),
@@ -150,7 +151,7 @@ targets <- list(
   tar_target(TESTS, test_testhat(input_files_automatic_tests_str = input_files_automatic_tests_str,
                                  input_files,
                                  DF_raw,
-                                 DF_clean, 
+                                 DF_clean,
                                  DICCIONARY_tasks,
                                  DF_joined
                                  )

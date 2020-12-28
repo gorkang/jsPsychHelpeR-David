@@ -8,9 +8,28 @@ run_sensitive_data <- function(input_files_sensitive, df_SDG) {
   # targets::tar_load("df_SDG")
   # targets::tar_load("input_files_sensitive")
   
-
   DF_raw_sensitive = read_data(input_files_sensitive, anonymize = FALSE)
+  
+  
+  # Test --------------------------------------------------------------------
+  
+  # No repeated id's per experimento!
+  repeated_id = 
+    DF_raw_sensitive %>% 
+    count(id, experimento, filename) %>% 
+    count(id, experimento) %>% 
+    arrange(desc(n)) %>% 
+    filter(n > 1)
+  
+  if (nrow(repeated_id) > 0) {
+    cat(crayon::red(paste0("\n\n[WARNING]: We have repeated id's in: ")), paste(repeated_id$experimento, collapse = ", "), "\n")
+    cat(crayon::red(paste0("\t\t      Offending IDs: ")), paste(repeated_id %>% distinct(id) %>% pull(id), collapse = ", "), "\n")
+    stop("FIX this error before proceeding")
+  }
+  
+  
   DF_clean_sensitive = create_clean_data(DF_raw_sensitive)
+  
   
   
   # Create DICCIONARIES -----------------------------------------------------
