@@ -7,11 +7,13 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+# Read files processed in run_sensitive_data.R
 df_FORM_RAW = read_rds(here::here(".vault/output/data/df_FORM5.rds"))
 df_Status_RAW = read_rds(here::here(".vault/output/data/df_FORM6.rds"))
 df_AIM = read_rds(here::here(".vault/output/data/df_AIM.rds")) %>% select(RUT, AIM_DIRt)
+df_Bank = read_rds(here::here(".vault/output/data/df_Bank.rds"))
 
-# df_FORM_RAW; df_Status_RAW; df_AIM
 ```
 
 ## Summary
@@ -165,10 +167,21 @@ DT::datatable(table_candidatos_long, filter = 'top',
 Participantes que han completado el protocolo:  
 
 ```{r completed-table, echo=FALSE}
+
 DF_completed = 
   DF %>% 
   filter(completed == "OK") %>% 
-  select(-completed)
+  select(-completed) %>% 
+  
+  # Join Bank information
+  left_join(df_Bank %>% 
+              select(id, Bank_01_DIR, Bank_02_DIR, Bank_03_DIR, Bank_04_DIR, Bank_05_DIR) %>% 
+              mutate(datos_bancarios = paste0(Bank_01_DIR, " | RUT: ", Bank_02_DIR, " | ", Bank_03_DIR, " | ", Bank_04_DIR, " | ",  Bank_05_DIR)) %>% 
+              select(id, datos_bancarios), 
+            by = "id")
+
+
+
 
 DT::datatable(DF_completed, filter = 'top', 
               options = list(

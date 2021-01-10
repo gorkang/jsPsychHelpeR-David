@@ -40,6 +40,7 @@ tests_DF_raw <- function(DF_raw) {
   # No repeated id's per experimento!
   repeated_id = 
     DF_raw %>% 
+    filter(experimento != "Consent") %>% 
     count(id, experimento, filename) %>% 
     count(id, experimento) %>% 
     arrange(desc(n)) %>% 

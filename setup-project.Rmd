@@ -33,6 +33,8 @@ Deberían estar instalados los siguientes programas:
 
 ### Crear y replicar proyecto 
 
+---  
+
 
 1. Ve a https://github.com/gorkang/jsPsychHelpeR-David, haz click en ![](img/setup-code.png) 
 
@@ -74,6 +76,8 @@ El nombre del repositorio se autocompletará. Eso si, no olvides seleccionar don
 
 
 ### Instalar dependencias
+
+---  
 
 
 8. Abre el archivo `setup.R`
@@ -118,8 +122,15 @@ Si ejecutamos una segunda vez `setup.R`, debería aparecer, entre otras cosas, l
 
 ### Lanzar proyecto de preparación de datos
 
+---  
 
-10. Lanza el proyecto de preparación de datos: 
+10. Antes de lanzar el proyecto de preparación de datos, debes hacer un **Pull** (sincronizas tu repositorio con el de Github para asegurarte que tienes la ultima version):
+
+![](img/setup-pull.png)
+
+---  
+
+11. Lanza el proyecto de preparación de datos: 
 
 - Abre `run.R` y ejecuta el archivo.
 

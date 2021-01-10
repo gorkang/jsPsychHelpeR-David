@@ -59,9 +59,10 @@ targets <- list(
   tar_target(df_SDG, prepare_SDG(DF_clean, short_name_scale_str = "SDG"), priority = 1),
 
   # Sensitive tasks  
-  tar_target(input_files_sensitive, list.files(path = ".vault/data_vault_5", pattern="csv", full.names = TRUE), format = "file"),
+  tar_target(input_files_sensitive, list.files(path = ".vault/data_vault_5", pattern = "csv", full.names = TRUE), format = "file"),
   tar_target(df_AIM, run_sensitive_data(input_files_sensitive, df_SDG)),
   
+  # Non sensitive tasks
   tar_target(df_Cov19Q, prepare_Cov19Q(DF_clean, short_name_scale_str = "Cov19Q")),
   tar_target(df_CRS, prepare_CRS(DF_clean, short_name_scale_str = "CRS")),
   tar_target(df_CRTMCQ4, prepare_CRTMCQ4(DF_clean, short_name_scale_str = "CRTMCQ4")),
@@ -167,4 +168,4 @@ targets <- list(
 
 # Declare pipeline --------------------------------------------------------
 
-  tar_pipeline(targets)
+  targets
