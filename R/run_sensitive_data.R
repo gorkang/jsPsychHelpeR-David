@@ -39,9 +39,6 @@ run_sensitive_data <- function(input_files_sensitive, df_SDG) {
       }
   
   
-
-  
-  
   # Create DICCIONARIES -----------------------------------------------------
   
   # FORM5
@@ -72,7 +69,7 @@ run_sensitive_data <- function(input_files_sensitive, df_SDG) {
 
 
   # FORM Status -----------------------------------------------------------
-  files_status = list.files(path = ".vault/data_vault_6", pattern="csv", full.names = TRUE)
+  files_status = list.files(path = ".vault/data_vault_6", pattern = "csv", full.names = TRUE)
   DF_FORM6 = prepare_FORM6(files_status, DF_DICCIONARY_id, short_name_scale_str = "FORM6")
   
   

@@ -105,6 +105,13 @@ table_done =
   select(edad, sexo, CONa_OK, CONc_OK, EXP_OK, GOAL_CONa, GOAL_CONc, GOAL_EXP,	CONa_CALL, CONc_CALL, EXP_CALL) %>% 
   select(-matches("NA_", ignore.case = FALSE))
 
+
+table_WARNINGS = 
+  table_done %>% 
+  select(edad, sexo, matches("GOAL")) %>% 
+  pivot_longer(GOAL_CONa:GOAL_EXP) %>% 
+  filter(value > -10)
+
 ```
    
   
@@ -125,6 +132,25 @@ DT::datatable(table_done, options = list(dom = 'ti'), rownames = FALSE) %>%
 - EXP: Vulnerable group: groups d y e 50% of sample
 - CONa: Non-vulnerable group: groups c3 y c2 25% of sample
 - CONc: Non-vulnerable group: groups ab, c1a y c1b 25% of sample
+
+
+---   
+
+### WARNINGS
+
+En estos grupos estamos cerca de llegar a la cuota (el objetivo es value = 0). Tener esto en cuenta a la hora de citar participantes.  
+
+```{r warning-table, echo=FALSE}
+
+DT::datatable(table_WARNINGS, options = list(dom = 'ti'), rownames = FALSE) %>% 
+      DT::formatStyle(
+        columns = c("value"), 
+        target = "cell",
+        color = DT::styleInterval(cuts = c(0), values = c("orange", "red"))
+    )
+
+```
+
 
 ---   
 
