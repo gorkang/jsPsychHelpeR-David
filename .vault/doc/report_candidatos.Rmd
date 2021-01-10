@@ -117,7 +117,7 @@ table_WARNINGS =
   
 ```{r summary-table, echo=FALSE}
 
-DT::datatable(table_done, options = list(dom = 'ti'), rownames = FALSE) %>% 
+DT::datatable(table_done, options = list(dom = 't'), rownames = FALSE) %>% 
       DT::formatStyle(
         columns = c("GOAL_CONa", "GOAL_CONc", "GOAL_EXP"), 
         target = "cell",
@@ -142,7 +142,7 @@ En estos grupos estamos cerca de llegar a la cuota (el objetivo es value = 0). T
 
 ```{r warning-table, echo=FALSE}
 
-DT::datatable(table_WARNINGS, options = list(dom = 'ti'), rownames = FALSE) %>% 
+DT::datatable(table_WARNINGS, options = list(dom = 't'), rownames = FALSE) %>% 
       DT::formatStyle(
         columns = c("value"), 
         target = "cell",
