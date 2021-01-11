@@ -23,6 +23,10 @@ df_Bank = read_rds(here::here(".vault/output/data/df_Bank.rds"))
 # Read main df_FORM_RAW contains everyone that filled the form. 
 # In run_sensitive_data is joined by SDG (id/RUT). Only the ones that completed the experiment have id.
 
+cuota_Ca = 20
+cuota_Cc = 20
+cuota_EX = 40
+
 DF = 
   df_FORM_RAW %>% 
   left_join(df_AIM, by = "RUT") %>% 
@@ -40,9 +44,9 @@ DF =
   
   mutate(grupo = 
            case_when(
-            AIM_DIRt == "d" | AIM_DIRt == "e" ~ "EXP",
-            AIM_DIRt == "c2" | AIM_DIRt == "c3" ~ "CONc",
-            AIM_DIRt == "c1a" | AIM_DIRt == "c1b" | AIM_DIRt == "ab" ~ "CONa",
+            AIM_DIRt == "d" | AIM_DIRt == "e" ~ "EX",
+            AIM_DIRt == "c2" | AIM_DIRt == "c3" ~ "Cc",
+            AIM_DIRt == "c1a" | AIM_DIRt == "c1b" | AIM_DIRt == "ab" ~ "Ca",
             TRUE ~ NA_character_),
 
          edad = 
@@ -55,7 +59,7 @@ DF =
          
          completed = 
            case_when(
-             is.na(id) ~ "CALL",
+             is.na(id) ~ "n",
              TRUE ~ "OK")
          ) %>% 
   
@@ -78,38 +82,42 @@ table_done_temp =
 
 
 # If we don't have certain types of people, create columns
-cols = c(CONc_CALL = 0, CONa_CALL = 0, EXP_CALL = 0, CONc_OK = 0, CONa_OK = 0, EXP_OK = 0)
+cols = c(Cc_n = 0, Ca_n = 0, EX_n = 0, Cc_OK = 0, Ca_OK = 0, EX_OK = 0)
 table_done_temp = tibble::add_column(table_done_temp, !!!cols[setdiff(names(cols), names(table_done_temp))]) 
 
 # If table is empty, create it
-if (nrow(table_done_temp) == 0) table_done_temp = tibble(edad = NA_character_, sexo = NA_character_, CONc_CALL = 0, CONa_CALL = 0,  EXP_CALL = 0,  CONc_OK = 0,  CONa_OK = 0,  EXP_OK = 0)
+if (nrow(table_done_temp) == 0) table_done_temp = tibble(edad = NA_character_, sexo = NA_character_, Cc_n = 0, Ca_n = 0,  EX_n = 0,  Cc_OK = 0,  CONa_OK = 0,  EXP_OK = 0)
   
 # Vulnerable group: groups d y e 50% of sample
 # Non-vulnerable group: groups c3 y c2 25% of sample
 # Non-vulnerable group: groups ab, c1a y c1b 25% of sample
   
-table_done = 
+table_done =
   table_done_temp %>% 
   complete(sexo = c("Masculino", "Femenino")) %>% 
   complete(edad = c("25-33", "34-42", "43-50"), nesting(sexo)) %>% 
   drop_na(edad, sexo) %>% 
-  replace_na(list(CONc_CALL = 0, CONa_CALL = 0, EXP_CALL = 0, CONc_OK = 0, CONa_OK = 0, EXP_OK = 0)) %>% 
-  mutate(GOAL_CONa = (CONa_OK - 20),
-         GOAL_CONc = (CONc_OK - 20),
-         GOAL_EXP = (EXP_OK - 40)) %>% 
-         # DIFF_CONEXP = EXP_OK - (CONa_OK + CONc_OK)
-         # DIFF_CONaCONc = (CONa_OK - CONc_OK)
-         # MARGEN_EXP = GOAL_EXP + n_EXP_CALL,
-         # MARGEN_CON = GOAL_CON + n_CON_CALL) %>% 
-         # Candidatos = ) 
-  select(edad, sexo, CONa_OK, CONc_OK, EXP_OK, GOAL_CONa, GOAL_CONc, GOAL_EXP,	CONa_CALL, CONc_CALL, EXP_CALL) %>% 
+  replace_na(list(Cc_n = 0, Ca_n = 0, EX_n = 0, Cc_OK = 0, Ca_OK = 0, EX_OK = 0)) %>% 
+  mutate(GOAL_Ca = (Ca_OK - cuota_Ca),
+         GOAL_Cc = (Cc_OK - cuota_Cc),
+         GOAL_EX = (EX_OK - cuota_EX)) %>% 
+  
+  mutate(DIF_Ca = GOAL_Ca + Ca_n,
+         DIF_Cc = GOAL_Cc + Cc_n,
+         DIF_EX = GOAL_EX + EX_n) %>% 
+  
+  
+  select(edad, sexo, Ca_OK, Cc_OK, EX_OK, GOAL_Ca, GOAL_Cc, GOAL_EX,	Ca_n, Cc_n, EX_n, DIF_Ca, DIF_Cc, DIF_EX) %>% 
   select(-matches("NA_", ignore.case = FALSE))
+
+  # select(edad, sexo, CONa_OK, CONc_OK, EXP_OK, GOAL_CONa, GOAL_CONc, GOAL_EXP,	CONa_CALL, CONc_CALL, EXP_CALL) %>% 
+  # select(-matches("NA_", ignore.case = FALSE))
 
 
 table_WARNINGS = 
   table_done %>% 
   select(edad, sexo, matches("GOAL")) %>% 
-  pivot_longer(GOAL_CONa:GOAL_EXP) %>% 
+  pivot_longer(GOAL_Ca:GOAL_EX) %>% 
   filter(value > -10)
 
 ```
@@ -119,19 +127,28 @@ table_WARNINGS =
 
 DT::datatable(table_done, options = list(dom = 't'), rownames = FALSE) %>% 
       DT::formatStyle(
-        columns = c("GOAL_CONa", "GOAL_CONc", "GOAL_EXP"), 
+        columns = c("GOAL_Ca", "GOAL_Cc", "GOAL_EX"), 
         target = "cell",
         color = DT::styleInterval(cuts = c(-10, 0), values = c("red", "orange", "green"))
-    )
+        ) %>% 
+  DT::formatStyle(
+        columns = c("DIF_Ca", "DIF_Cc", "DIF_EX"), 
+        target = "cell",
+        color = DT::styleInterval(cuts = c(-10, 0), values = c("red", "orange", "green"))
+        )
+  # DT::formatStyle(c("DIF_Ca", "DIF_Cc", "DIF_EX"), 
+  #                 backgroundColor = 'gray')
+  #                 # backgroundColor = DT::styleInterval(cuts = c(-10, 0), c('gray', 'yellow', 'blue')))
 
 ```
-**CON_OK**: Grupo control completados; **EXP_OK**: Grupo experimental completados  
-**GOAL_CON**: Cuantos faltan del grupo control; **GOAL_EXP**: Cuantos faltan del grupo experimental    
-**CON_CALL**: Grupo control esperando llamada; **EXP_CALL**: Grupo experimental esperando llamada  
+**OK**: Completados  
+**GOAL**: Cuantos faltan para llegar a las cuotas (40 grupo experimental, 20 cada grupo control)  
+**n**: En la base, esperando llamada  
+**DIF**: Si todos los de la base completaran el experimento, cuantos faltarian/sobrarian para llegar a la cuota  
 
-- EXP: Vulnerable group: groups d y e 50% of sample
-- CONa: Non-vulnerable group: groups c3 y c2 25% of sample
-- CONc: Non-vulnerable group: groups ab, c1a y c1b 25% of sample
+- EXP: Vulnerable group: groups d y e 50% of sample (n = 240)  
+- CONa: Non-vulnerable group: groups c3 y c2 25% of sample (n = 120)  
+- CONc: Non-vulnerable group: groups ab, c1a y c1b 25% of sample (n = 120)  
 
 
 ---   
