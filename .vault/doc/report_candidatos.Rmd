@@ -188,7 +188,7 @@ df_Status =
 table_candidatos_long =
   DF %>% 
   left_join(df_Status, by = "RUT") %>% 
-  filter(completed == "CALL") %>% 
+  filter(completed == "n") %>% 
   drop_na(edad) %>% 
   select(grupo, edad, sexo, RUT, name, telefono, email, comuna, status, notes)
 
