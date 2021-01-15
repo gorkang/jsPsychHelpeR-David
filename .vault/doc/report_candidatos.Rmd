@@ -15,6 +15,10 @@ df_AIM = read_rds(here::here(".vault/output/data/df_AIM.rds")) %>% select(RUT, A
 df_Bank = read_rds(here::here(".vault/output/data/df_Bank.rds"))
 
 ```
+Construido: `r Sys.time()`  
+
+---  
+
 
 ## Summary
 
@@ -27,7 +31,7 @@ cuota_Ca = 20
 cuota_Cc = 20
 cuota_EX = 40
 
-DF = 
+DF_raw = 
   df_FORM_RAW %>% 
   left_join(df_AIM, by = "RUT") %>% 
   select(id, RUT, AIM_DIRt, FORM5_02_DIR, FORM5_03_DIR, FORM5_04_DIR, FORM5_05_DIR, FORM5_06_DIR, FORM5_07_DIR, FORM5_08_DIR) %>% 
@@ -61,8 +65,11 @@ DF =
            case_when(
              is.na(id) ~ "n",
              TRUE ~ "OK")
-         ) %>% 
+         )
+
   
+DF = 
+  DF_raw %>% 
   # Filter out by age, sex and socioeconomic group
   filter(sexo != "No binario") %>%
   filter(edad != "demasiado viejo" & edad != "demasiado joven") %>% 
@@ -185,6 +192,12 @@ df_Status =
          notes =  paste(paste0("[", date, "]: ", FORM6_02_RAW), collapse = ", "), 
          .groups = "keep")
 
+# Non filtered candidates
+# DF_raw %>% 
+#   filter(completed == "n") %>% 
+#   drop_na(edad) %>% 
+#   drop_na(grupo)
+
 table_candidatos_long =
   DF %>% 
   left_join(df_Status, by = "RUT") %>% 
@@ -231,3 +244,37 @@ DT::datatable(DF_completed, filter = 'top',
                 dom = 'tip',
                 autoWidth = TRUE))
 ```
+
+---  
+
+### Missing  
+
+Tabla donde se muestra la suma de los participantes faltan en cada grupo.
+
+```{r missing-totals-table, echo=FALSE}
+
+missing_totals_table = 
+  table_done %>% 
+  select(edad, sexo, matches("GOAL"), matches("DIF")) %>% 
+  mutate(missing_GOAL_Ca = (abs(GOAL_Ca) - GOAL_Ca)/2,
+         missing_GOAL_Cc = (abs(GOAL_Cc) - GOAL_Cc)/2,
+         missing_GOAL_EX = (abs(GOAL_EX) - GOAL_EX)/2,
+         missing_DIF_Ca = (abs(DIF_Ca) - DIF_Ca)/2,
+         missing_DIF_Cc = (abs(DIF_Cc) - DIF_Cc)/2,
+         missing_DIF_EX = (abs(DIF_EX) - DIF_EX)/2) %>% 
+  janitor::adorn_totals() %>% 
+  select(edad, sexo, matches("missing"))
+
+DT::datatable(missing_totals_table, options = list(dom = 't'), rownames = FALSE) %>% 
+      DT::formatStyle(
+        columns = c("missing_GOAL_Ca", "missing_GOAL_Cc", "missing_GOAL_EX", "missing_DIF_Ca", "missing_DIF_Cc", "missing_DIF_EX"), 
+        target = "cell",
+        color = DT::styleInterval(cuts = c(10, 20), values = c("green", "orange", "red"))
+        ) %>% 
+  formatStyle('edad',
+              target = 'row',
+              backgroundColor = styleEqual(c("Total"), c('gray'))
+)
+         
+```
+
