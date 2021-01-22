@@ -27,9 +27,14 @@ Construido: `r Sys.time()`
 # Read main df_FORM_RAW contains everyone that filled the form. 
 # In run_sensitive_data is joined by SDG (id/RUT). Only the ones that completed the experiment have id.
 
-cuota_Ca = 20
-cuota_Cc = 20
-cuota_EX = 40
+# cuota_total = 480 # OLD CUOTA 20/20/40
+cuota_total = 504 # New CUOTA 21/21/42
+subgrupos_edad_sexo = 6 # 3 grupos de edad * 2 sexos
+# Ademas, la muestra se divide en 4 grupos, 2 controles y 1 experimental (=tamaño a 2 controles)
+
+cuota_Ca = cuota_total / subgrupos_edad_sexo * (1/4) # 1 de los 4 grupos es control Ca
+cuota_Cc = cuota_total / subgrupos_edad_sexo * (1/4) # 1 de los 4 grupos es control Cc
+cuota_EX = cuota_total / subgrupos_edad_sexo * (2/4) # 2 de los 4 grupos son experimental EX
 
 DF_raw = 
   df_FORM_RAW %>% 
@@ -127,6 +132,9 @@ table_WARNINGS =
   pivot_longer(GOAL_Ca:GOAL_EX) %>% 
   filter(value > -10)
 
+
+status_OK = DF %>% filter(completed == "OK") %>% count()
+status_n = DF %>% filter(completed == "n") %>% count()
 ```
    
   
@@ -148,14 +156,16 @@ DT::datatable(table_done, options = list(dom = 't'), rownames = FALSE) %>%
   #                 # backgroundColor = DT::styleInterval(cuts = c(-10, 0), c('gray', 'yellow', 'blue')))
 
 ```
-**OK**: Completados  
-**GOAL**: Cuantos faltan para llegar a las cuotas (40 grupo experimental, 20 cada grupo control)  
-**n**: En la base, esperando llamada  
+**OK**: Completados: `r status_OK` / `r cuota_total` (`r round((status_OK / cuota_total) * 100, 2)`%)  
+**GOAL**: Cuantos faltan para llegar a las cuotas (`r cuota_EX` grupo experimental, `r cuota_Ca` cada grupo control)  
+**n**: En la base, esperando llamada: `r status_n`    
 **DIF**: Si todos los de la base completaran el experimento, cuantos faltarian/sobrarian para llegar a la cuota  
 
-- EXP: Vulnerable group: groups d y e 50% of sample (n = 240)  
-- CONa: Non-vulnerable group: groups c3 y c2 25% of sample (n = 120)  
-- CONc: Non-vulnerable group: groups ab, c1a y c1b 25% of sample (n = 120)  
+Grupos en experimento:  
+
+- EXP: Vulnerable group: groups d y e 50% of sample (n = `r cuota_total / 2`)  
+- CONa: Non-vulnerable group: groups c3 y c2 25% of sample (n = `r cuota_total / 4`)  
+- CONc: Non-vulnerable group: groups ab, c1a y c1b 25% of sample (n = `r cuota_total / 4`)  
 
 
 ---   
