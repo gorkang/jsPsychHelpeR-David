@@ -14,6 +14,7 @@ df_Status_RAW = read_rds(here::here(".vault/output/data/df_FORM6.rds"))
 df_AIM = read_rds(here::here(".vault/output/data/df_AIM.rds")) %>% select(RUT, AIM_DIRt)
 df_Bank = read_rds(here::here(".vault/output/data/df_Bank.rds"))
 
+# df_FORM_RAW %>% distinct(FORM5_00_RAW) %>% View
 ```
 Construido: `r Sys.time()`  
 
@@ -39,9 +40,10 @@ cuota_EX = cuota_total / subgrupos_edad_sexo * (2/4) # 2 de los 4 grupos son exp
 DF_raw = 
   df_FORM_RAW %>% 
   left_join(df_AIM, by = "RUT") %>% 
-  select(id, RUT, AIM_DIRt, FORM5_02_DIR, FORM5_03_DIR, FORM5_04_DIR, FORM5_05_DIR, FORM5_06_DIR, FORM5_07_DIR, FORM5_08_DIR) %>% 
+  select(id, RUT, AIM_DIRt, FORM5_00_RAW, FORM5_02_DIR, FORM5_03_DIR, FORM5_04_DIR, FORM5_05_DIR, FORM5_06_DIR, FORM5_07_DIR, FORM5_08_DIR) %>% 
   
   rename(
+    nacionalidad = FORM5_00_RAW,
     email = FORM5_02_DIR, 
     name = FORM5_03_DIR,
     edad = FORM5_04_DIR,
@@ -80,7 +82,7 @@ DF =
   filter(edad != "demasiado viejo" & edad != "demasiado joven") %>% 
   drop_na(grupo) %>% 
   
-  select(id, RUT, completed, edad, sexo, grupo, edad, telefono, email, name, comuna)
+  select(id, RUT, completed, edad, sexo, grupo, edad, telefono, email, name, comuna, nacionalidad)
 
 
 
@@ -213,7 +215,7 @@ table_candidatos_long =
   left_join(df_Status, by = "RUT") %>% 
   filter(completed == "n") %>% 
   drop_na(edad) %>% 
-  select(grupo, edad, sexo, RUT, name, telefono, email, comuna, status, notes)
+  select(grupo, edad, sexo, RUT, name, telefono, email, comuna, nacionalidad, status, notes)
 
 DT::datatable(table_candidatos_long, filter = 'top', 
               options = list(
