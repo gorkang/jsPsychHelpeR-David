@@ -132,7 +132,13 @@ table_WARNINGS =
   table_done %>% 
   select(edad, sexo, matches("GOAL")) %>% 
   pivot_longer(GOAL_Ca:GOAL_EX) %>% 
-  filter(value > -10)
+  filter(value > -10) %>% 
+  mutate(warning = 
+           case_when(
+             value < 0 ~ paste0("Nos quedan ", abs(value), " participantes para cerrar el grupo. "),
+             value == 0 ~ paste0("Grupo CERRADO. No citar mas personas."),
+             value > 0 ~ paste0("CUOTA EXCEDIDA en  ", abs(value), " participantes. ¡`NO CITAR MAS!")
+           ))
 
 
 status_OK = DF %>% filter(completed == "OK") %>% count()
@@ -146,16 +152,16 @@ DT::datatable(table_done, options = list(dom = 't'), rownames = FALSE) %>%
       DT::formatStyle(
         columns = c("GOAL_Ca", "GOAL_Cc", "GOAL_EX"), 
         target = "cell",
-        color = DT::styleInterval(cuts = c(-10, 0), values = c("red", "orange", "green"))
+        color = DT::styleInterval(cuts = c(-10, 0), values = c("red", "black", "white"))
         ) %>% 
   DT::formatStyle(
         columns = c("DIF_Ca", "DIF_Cc", "DIF_EX"), 
         target = "cell",
         color = DT::styleInterval(cuts = c(-10, 0), values = c("red", "orange", "green"))
-        )
-  # DT::formatStyle(c("DIF_Ca", "DIF_Cc", "DIF_EX"), 
-  #                 backgroundColor = 'gray')
-  #                 # backgroundColor = DT::styleInterval(cuts = c(-10, 0), c('gray', 'yellow', 'blue')))
+        ) %>% 
+  DT::formatStyle(c("GOAL_Ca", "GOAL_Cc", "GOAL_EX"),
+                  backgroundColor = DT::styleInterval(cuts = c(-10, -5, 0, 1), c('white', '#FFCC00', '#FF6600', '#669900', '#CC0000')))
+                  # backgroundColor = DT::styleInterval(cuts = c(-10, 0), c('gray', 'yellow', 'blue')))
 
 ```
 **OK**: Completados: `r status_OK` / `r cuota_total` (`r round((status_OK / cuota_total) * 100, 2)`%)  
