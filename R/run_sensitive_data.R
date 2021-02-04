@@ -2,7 +2,7 @@
 # Function to deal with sensitive data (input files/credentials will be stored in .vault/, and NOT shared)
 # We output df_AIM, which is run in a Google FORM
 
-run_sensitive_data <- function(input_files_sensitive, df_SDG) {
+run_sensitive_data <- function(input_files_sensitive, df_SDG, DF_clean) {
 
   # DEBUG
   # targets::tar_load("df_SDG")
@@ -71,6 +71,63 @@ run_sensitive_data <- function(input_files_sensitive, df_SDG) {
   # FORM Status -----------------------------------------------------------
   files_status = list.files(path = ".vault/data_vault_6", pattern = "csv", full.names = TRUE)
   DF_FORM6 = prepare_FORM6(files_status, DF_DICCIONARY_id, short_name_scale_str = "FORM6")
+  
+  
+  
+
+  # Save plots --------------------------------------------------------------
+
+  plot_form6 = DF_FORM6 %>%
+    filter(FORM6_01_RAW == "protocolo enviado") %>%
+    distinct(RUT, .keep_all = TRUE) %>% 
+    mutate(fecha_registro = as.Date(datetime)) %>% 
+    count(fecha_registro, name = "numero_registros") %>% 
+    ggplot(aes(fecha_registro, numero_registros)) +
+    geom_line() +
+    geom_point() +
+    theme_minimal() +
+    scale_x_date(date_breaks = "1 day", guide = guide_axis(angle = 90)) +
+    scale_y_continuous(n.breaks = 10) +
+    labs(title = "Protocolos enviados", 
+         subtitle = paste0("Ultimo dato: ", as.Date(max(DF_FORM6$datetime))))
+  
+  
+  plot_form5 = DF_clean_sensitive %>% 
+    filter(experimento == "FORM5") %>% 
+    distinct(id, .keep_all = TRUE) %>% 
+    distinct(filename, datetime) %>% 
+    mutate(fecha_registro = as.Date(datetime)) %>% 
+    count(fecha_registro, name = "numero_registros") %>% 
+    ggplot(aes(fecha_registro, numero_registros)) +
+    geom_line() +
+    geom_point() +
+    theme_minimal() +
+    scale_x_date(date_breaks = "1 day", guide = guide_axis(angle = 90)) +
+    scale_y_continuous(n.breaks = 10) +
+    labs(title = "Registros potenciales participantes (protocolo 5)",
+         subtitle = paste0("Ultimo dato: ", as.Date(max(DF_clean_sensitive$datetime))))
+  
+  
+  
+  plot_form1 = DF_clean %>% 
+    filter(experimento == "Bank") %>%
+    distinct(id, .keep_all = TRUE) %>% 
+    distinct(filename, datetime) %>% 
+    mutate(fecha_registro = as.Date(datetime)) %>% 
+    count(fecha_registro, name = "numero_registros") %>% 
+    ggplot(aes(fecha_registro, numero_registros)) +
+    geom_line() +
+    geom_point() +
+    theme_minimal() +
+    scale_x_date(date_breaks = "1 day", guide = guide_axis(angle = 90)) +
+    scale_y_continuous(n.breaks = 10) +
+    labs(title = "Protocolo 1 completado",
+         subtitle = paste0("Ultimo dato: ", as.Date(max(DF_clean$datetime))))
+  
+  
+  ggsave("output/plots/plot_form1.png", plot_form1, width = 15, height = 9)
+  ggsave("output/plots/plot_form5.png", plot_form5, width = 15, height = 9)
+  ggsave("output/plots/plot_form6.png", plot_form6, width = 15, height = 9)
   
   
   # Report ------------------------------------------------------------------

@@ -137,7 +137,7 @@ table_WARNINGS =
            case_when(
              value < 0 ~ paste0("Nos quedan ", abs(value), " participantes para cerrar el grupo. "),
              value == 0 ~ paste0("Grupo CERRADO. No citar mas personas."),
-             value > 0 ~ paste0("CUOTA EXCEDIDA en  ", abs(value), " participantes. ¡`NO CITAR MAS!")
+             value > 0 ~ paste0("CUOTA EXCEDIDA en  ", abs(value), " participantes. ¡NO CITAR MAS!")
            ))
 
 

@@ -15,7 +15,8 @@ create_clean_data <- function(DF_raw) {
     filter(trial_type != "fullscreen") %>% # Empty line
     filter(!trialid %in% c("Screen_WM", "Instructions")) %>%  # Delete instructions [TODO]: use regexp to clean instrucciones_NOMBRETEST
     filter(!grepl("Instructions", trialid, ignore.case = TRUE))
-  
+
+
   # Output of function ---------------------------------------------------------
   return(DF_clean)
 

@@ -21,7 +21,7 @@
   data_preparation_packages = c("dplyr", "forcats", "here", "janitor", "purrr", "readr", "stringr", "tibble", "tidyr") #"safer", 
   data_analysis_packages = c("broom", "broom.mixed", "DT", "emmeans", "gmodels", "gt", "gtsummary", "irr", "kableExtra", "lme4", "parameters", "performance", "psych", "sjPlot") #"report"
   data_visualization_packages = c("ggalluvial", "ggridges")
-  non_declared_dependencies = c("qs", "visNetwork", "webshot", "performance")
+  non_declared_dependencies = c("qs", "visNetwork", "webshot", "performance", "bs4Dash", "pingr", "shiny", "shinycssloaders")
   extra_packages = c("shrtcts", "httr")
   packages_to_load = c(main_packages, data_preparation_packages, data_analysis_packages, data_visualization_packages, non_declared_dependencies, extra_packages)
   
@@ -31,7 +31,7 @@
   
   
   # Make sure tests run always
-  if (file.exists("_targets/objects/TESTS") == TRUE ) targets::tar_invalidate(matches("TESTS"))
+  # if (file.exists("_targets/objects/TESTS") == TRUE ) targets::tar_invalidate(matches("TESTS"))
 
   
 
@@ -43,9 +43,9 @@ targets <- list(
   # _Read files --------------------------------------------------------------
   
   # RAW data
-  tar_target(input_files, list.files(path = "data", pattern="csv", full.names = TRUE), format = "file"), #, format = "file" (IF files in vault/ first run fails)
+  tar_files(input_files, list.files(path = "data", pattern = "csv", full.names = TRUE)),
   tar_target(DF_raw, read_data(input_files, anonymize = FALSE)),
-  tar_target(tests_DF_raw, tests_DF_raw(DF_raw), priority = 1),
+  tar_target(tests_DFraw, tests_DF_raw(DF_raw), priority = 1),
   
   # Cleaned data
   tar_target(DF_clean, create_clean_data(DF_raw)),
@@ -59,8 +59,8 @@ targets <- list(
   tar_target(df_SDG, prepare_SDG(DF_clean, short_name_scale_str = "SDG"), priority = 1),
 
   # Sensitive tasks  
-  tar_target(input_files_sensitive, list.files(path = ".vault/data_vault_5", pattern = "csv", full.names = TRUE), format = "file"),
-  tar_target(df_AIM, run_sensitive_data(input_files_sensitive, df_SDG)),
+  tar_files(input_files_sensitive, list.files(path = ".vault/data_vault_5", pattern = "csv", full.names = TRUE)),
+  tar_target(df_AIM, run_sensitive_data(input_files_sensitive, df_SDG, DF_clean)),
   
   # Non sensitive tasks
   tar_target(df_Cov19Q, prepare_Cov19Q(DF_clean, short_name_scale_str = "Cov19Q")),
@@ -140,7 +140,7 @@ targets <- list(
   tar_target(table1_model_E1, analysis_model_E1_table(model_E1)),
 
   # Plots
-  tar_target(plots_descriptive, analysis_descriptive_plots(DF_joined)),
+  tar_target(plots_descriptive, analysis_descriptive_plots(DF_joined, DF_raw)),
   tar_target(plot1_model_E1, analysis_model_E1_plot(model_E1)),
   
   

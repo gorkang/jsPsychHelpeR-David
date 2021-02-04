@@ -12,23 +12,20 @@ read_data <- function(input_files, anonymize = FALSE) {
   plan(multisession, workers = 2)
   
   # Read all files
-    DF_raw = furrr::future_map_dfr(input_files %>% set_names(basename(.)), readr::read_csv, .id = "filename",
-    # DF_raw = purrr::map_dfr(input_files %>% set_names(basename(.)), readr::read_csv, .id = "filename",
+    # DF_raw = furrr::future_map_dfr(input_files %>% set_names(basename(.)), readr::read_csv, .id = "filename",
+    DF_raw = purrr::map_dfr(input_files %>% set_names(basename(.)), readr::read_csv, .id = "filename",
                          col_types = 
                            cols(
                              .default = col_character(),
                              success = col_logical(),
-                             trial_type = col_character(),
                              trial_index = col_double(),
                              time_elapsed = col_double(),
-                             internal_node_id = col_character(),
-                             view_history = col_character(),
-                             rt = col_double(),
-                             trialid = col_character(),
-                             stimulus = col_character(),
-                             responses = col_character()
+                             rt = col_double()
                            )
-                         )  
+                         )
+      # rowwise() %>%
+      # mutate(stimulus = ifelse("stimulus" %in% names(.), stimulus, NA_character_),
+      #        responses = ifelse("responses" %in% names(.), responses, NA_character_))
   
     
     DF_raw =
@@ -55,21 +52,11 @@ read_data <- function(input_files, anonymize = FALSE) {
     
   # CHECK -------------------------------------------------------------------
   
-    DF_duplicates = suppressMessages(DF_raw %>% janitor::get_dupes(-c(filename)))
-    # suppressMessages(DF_raw %>% janitor::get_dupes(c(id, trialid))) %>% filter(trialid !="Instructions") %>% distinct(id) %>% pull(id)
-    # DF_raw%>% distinct(id) %>% pull(id)
-    # DF_raw %>% 
-    #   filter(trialid == "SDG_00") %>% 
-    #   janitor::get_dupes(c(id, project, experimento)) %>%
-    #   group_by(id) %>% 
-    #   sample_n(1) %>% 
-    #   pull(filename) %>% 
-    #   file.remove(paste0("data/", .))
-    # 
-    
+    DF_duplicates = suppressMessages(DF_raw %>% janitor::get_dupes(c(id, experimento, trialid)))
+
     if (nrow(DF_duplicates) > 0) {
-      input_files_duplicates = DF_duplicates %>% filter(success == TRUE) %>% distinct(filename) %>% pull(filename)
-      stop("[ERROR]: There are duplicates in the '/data' input files: ", paste(input_files_duplicates, collapse = ", "))
+      input_files_duplicates = DF_duplicates %>% distinct(filename) %>% pull(filename)
+      warning("\n[ERROR]: There are duplicates in the '/data' input files: \n\n - ", paste(input_files_duplicates, collapse = "\n - "))
     }
   
   # Output of function ---------------------------------------------------------
