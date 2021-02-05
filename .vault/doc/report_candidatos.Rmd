@@ -1,6 +1,8 @@
 ---
 title: "Candidatos"
-output: html_document
+output: 
+  html_document: 
+    toc: yes
 editor_options: 
   chunk_output_type: console
 ---
