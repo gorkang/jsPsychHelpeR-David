@@ -9,11 +9,13 @@ editor_options:
 
 ```{r setup, include=FALSE}
 # DEBUG
-source(here::here("_packages.R"))
+# source(here::here("_packages.R"))
+# DF_clean = read_rds(here::here("_targets/objects/DF_clean"))
+# DF_raw = read_rds(here::here("_targets/objects/DF_raw"))
 
 knitr::opts_chunk$set(echo = TRUE)
-DF_clean = read_rds(here::here("_targets/objects/DF_clean"))
-DF_raw = read_rds(here::here("_targets/objects/DF_raw"))
+targets::tar_load(DF_clean)
+targets::tar_load(DF_raw)
 DF = DF_clean
 
 ```
