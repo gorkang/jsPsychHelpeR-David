@@ -11,6 +11,15 @@ editor_options:
 source(here::here("_packages.R"))
 knitr::opts_chunk$set(echo = TRUE)
 
+# Read main DF_raw file. Create DF with people that completed the protocol 
+DF_completed_protocol = 
+  read_rds(here::here("_targets/objects/DF_raw")) %>% 
+  filter(trialid == "Bank_06") %>%
+  distinct(id) %>% 
+  mutate(completed = "OK")
+    
+  
+
 # Read files processed in run_sensitive_data.R
 df_FORM_RAW = read_rds(here::here(".vault/output/data/df_FORM5.rds"))
 df_Status_RAW = read_rds(here::here(".vault/output/data/df_FORM6.rds"))
@@ -68,22 +77,26 @@ DF_raw =
              between(edad, 34, 42) ~ "34-42",
              between(edad, 43, 50) ~ "43-50",
              edad < 25 ~ "demasiado joven",
-             edad > 50 ~ "demasiado viejo"),
-         
-         completed = 
-           case_when(
-             is.na(id) ~ "n",
-             TRUE ~ "OK")
-         )
-
+             edad > 50 ~ "demasiado viejo")
+         ) %>% 
   
+  # Join COMPLETED id's
+  full_join(DF_completed_protocol, by = "id") %>% 
+  mutate(completed = 
+           case_when(
+             is.na(completed) ~ "n",
+             TRUE ~ "OK"))
+
+# REVISAR --------------------------------------------------------
+DFXXX = DF_raw %>% filter(is.na(RUT))
+# ----------------------------------------------------------------
+
 DF = 
   DF_raw %>% 
   # Filter out by age, sex and socioeconomic group
   filter(sexo != "No binario") %>%
   filter(edad != "demasiado viejo" & edad != "demasiado joven") %>% 
   drop_na(grupo) %>% 
-  
   select(id, RUT, completed, edad, sexo, grupo, edad, telefono, email, name, comuna, nacionalidad)
 
 
@@ -355,4 +368,21 @@ DT::datatable(DF_completed,
 ```
 
 ---  
+
+### Revisar
+
+Han completado el protocolo (tenemos datos bancarios) pero NO han completado el FORM5.  
+
+```{r completed-table-revisar, echo=FALSE}
+
+DT::datatable(DFXXX, 
+              width = "150%",
+              filter = 'top', 
+              escape = FALSE,
+              options = list(
+                
+                dom = 'tip',
+                autoWidth = TRUE,
+                searchHighlight = TRUE))
+```
 
