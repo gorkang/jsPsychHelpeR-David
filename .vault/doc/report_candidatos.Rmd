@@ -156,8 +156,8 @@ table_WARNINGS =
            ))
 
 
-status_OK = DF %>% filter(completed == "OK") %>% count()
-status_n = DF %>% filter(completed == "n") %>% count()
+status_OK = DF %>% filter(completed == "OK") %>% count() %>% pull(n)
+status_n = DF %>% filter(completed == "n") %>% count() %>% pull(n)
 ```
 
 

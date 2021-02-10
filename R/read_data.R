@@ -11,7 +11,6 @@ read_data <- function(input_files, anonymize = FALSE) {
   
   plan(multisession, workers = 4)
   
-  tictoc::tic()
   # Read all files
     DF_raw = furrr::future_map_dfr(input_files %>% set_names(basename(.)), readr::read_csv, .id = "filename",
     # DF_raw = purrr::map_dfr(input_files %>% set_names(basename(.)), readr::read_csv, .id = "filename",
@@ -27,8 +26,6 @@ read_data <- function(input_files, anonymize = FALSE) {
       # rowwise() %>%
       # mutate(stimulus = ifelse("stimulus" %in% names(.), stimulus, NA_character_),
       #        responses = ifelse("responses" %in% names(.), responses, NA_character_))
-  
-    tictoc::toc()
     
     
     DF_raw =
