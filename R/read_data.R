@@ -66,6 +66,13 @@ read_data <- function(input_files, anonymize = FALSE) {
       stop("\n[ERROR]: There are duplicates in the BANK experiment in the '/data' input files: \n\n - ", paste(input_files_duplicates, collapse = "\n - "))
     }
     
+    DF_bank_duplicates = DF_raw %>% filter(trialid == "Bank_02") %>% count(responses) %>% arrange(desc(n)) %>% filter(n > 1)
+    if (nrow(DF_bank_duplicates) > 0) {
+      input_files_duplicates = DF_bank_duplicates %>% distinct(responses) %>% pull(responses)
+      stop("\n[ERROR]: The following RUTs are duplicate in the BANK experiment in the '/data' input files: \n\n - ", paste(input_files_duplicates, collapse = "\n - "))
+    }
+    
+    
   
   # Output of function ---------------------------------------------------------
     
