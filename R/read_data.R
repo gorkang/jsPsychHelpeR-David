@@ -54,10 +54,18 @@ read_data <- function(input_files, anonymize = FALSE) {
   
     DF_duplicates = suppressMessages(DF_raw %>% janitor::get_dupes(c(id, experimento, trialid)))
 
+    # WARNING on duplicates
     if (nrow(DF_duplicates) > 0) {
       input_files_duplicates = DF_duplicates %>% distinct(filename) %>% pull(filename)
-      warning("\n[ERROR]: There are duplicates in the '/data' input files: \n\n - ", paste(input_files_duplicates, collapse = "\n - "))
+      warning("\n[WARNING]: There are duplicates in the '/data' input files: \n\n - ", paste(input_files_duplicates, collapse = "\n - "))
     }
+
+    # IF any of the duplicates are in the Bank experiment (last task), ERROR!
+    if (nrow(DF_duplicates %>% filter(experimento == "Bank")) > 0) {
+      input_files_duplicates = DF_duplicates %>% filter(experimento == "Bank") %>% distinct(filename) %>% pull(filename)
+      stop("\n[ERROR]: There are duplicates in the BANK experiment in the '/data' input files: \n\n - ", paste(input_files_duplicates, collapse = "\n - "))
+    }
+    
   
   # Output of function ---------------------------------------------------------
     
