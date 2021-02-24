@@ -386,3 +386,39 @@ DT::datatable(DFXXX,
                 searchHighlight = TRUE))
 ```
 
+
+### Iniciados - con RUT
+
+```{r iniciados-RUT, echo=FALSE}
+
+DF_raw = read_rds(here::here("output/data/DF_raw.rds"))
+
+all_tasks = DF_raw %>% distinct(experimento) %>% pull(experimento)
+
+RUT_DF = 
+  DF_raw %>% 
+  filter(trialid == "SDG_01") %>% 
+  distinct(id, responses) %>% 
+  rename(RUT = responses)
+  
+
+
+summary_table_RUT = 
+  DF_raw %>% 
+  select(id, experimento, time_elapsed) %>% 
+  group_by(id, experimento) %>% 
+  summarise(TIME = round(max(time_elapsed)/60000, 2), 
+            N = n(), 
+            .groups = "keep") %>% 
+  group_by(id) %>% 
+  summarise(TIME = sum(TIME), 
+            N = n(), 
+            tasks = paste(experimento, collapse = ", "),
+            .groups = "keep") %>% 
+  mutate(missing = paste(all_tasks[!all_tasks %in% (strsplit(tasks, split = ", ") %>% unlist())], collapse = ", ")) %>% 
+  left_join(RUT_DF, by = "id") %>% 
+  select(id, RUT, everything())
+
+DT::datatable(summary_table_RUT, filter = 'top', options = list(dom = 'ltip', pageLength = 10))
+
+```

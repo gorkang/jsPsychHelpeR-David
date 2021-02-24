@@ -7,7 +7,7 @@
 ##' @return
 ##' @author gorkang
 ##' @export
-read_data <- function(input_files, anonymize = FALSE) {
+read_data <- function(input_files, anonymize = FALSE, save_output = FALSE) {
   
   plan(multisession, workers = 4)
   
@@ -74,6 +74,11 @@ read_data <- function(input_files, anonymize = FALSE) {
     
     
   
+    
+  # Save files --------------------------------------------------------------
+  if (save_output == TRUE) save_files(DF_raw, short_name_scale = "raw", is_scale = FALSE)
+    
+    
   # Output of function ---------------------------------------------------------
     
     return(DF_raw)
