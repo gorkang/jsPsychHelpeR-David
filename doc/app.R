@@ -42,7 +42,7 @@ ui <- fluidPage(
       
       # Output: Tabset w/ plot, summary, and table ----
       tabsetPanel(type = "tabs",
-                  tabPanel("Plot", plotOutput("plot")),
+                  tabPanel("Plot", plotOutput("plot", height = "800px")),
                   tabPanel("Summary", dataTableOutput("summary")),
                   tabPanel("Table", dataTableOutput("table"))
       )
@@ -54,27 +54,38 @@ ui <- fluidPage(
 server <- function(input, output) {
   
   d <- reactive({
-    DF_analysis %>% select(id, input$variable)
+    DF_analysis %>% 
+      select(id, input$variable) %>%
+      pivot_longer(2:ncol(.))
+  })
+  
+  d_table <- reactive({
+    DF_analysis %>% 
+      select(id, input$variable)
   })
   
   output$plot <- renderPlot({
     d() %>% 
-      ggplot(aes_string(input$variable)) + 
-      geom_histogram(bins = input$bins) +
+      
+      ggplot(aes(value, name, fill = name)) + 
+      ggridges::geom_density_ridges(stat = "binline", bins = input$bins, scale = 0.95, draw_baseline = FALSE, show.legend = FALSE) +
+      ggridges::geom_density_ridges(jittered_points = TRUE, position = "raincloud", alpha = 0.7, scale = 0.9, show.legend = FALSE) +
+      theme(legend.position = "none") +
       theme_minimal()
+    
+      # ggplot(aes_string(input$variable)) + 
+      # geom_histogram(bins = input$bins) +
+      # theme_minimal()
   })
   
   # Generate a summary of the data ----
-  # output$summary <- renderPrint({
-  #   summary(d())
-  # })
   output$summary <- renderDataTable({
-    skimr::skim(d() %>% select(-id))
+    skimr::skim(d_table() %>% select(-id))
   })
   
   # Generate an HTML table view of the data ----
   output$table <- renderDataTable({
-    d()
+    d_table()
   })
   
 }
