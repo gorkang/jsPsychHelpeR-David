@@ -46,33 +46,7 @@ read_data <- function(input_files, anonymize = FALSE, save_output = FALSE) {
       ) %>% 
       rowwise() %>% 
       mutate(responses = lapply(regmatches(responses, gregexpr('(\").*?(\")', responses, perl = TRUE)), function(y) gsub("^\"|\"$", "", y)) %>% unlist() %>% paste(., collapse = "; ")) # Should deal with multiple responses (?)
-    
-  
- 
-    
-  # CHECK -------------------------------------------------------------------
-  
-    DF_duplicates = suppressMessages(DF_raw %>% janitor::get_dupes(c(id, experimento, trialid)))
 
-    # WARNING on duplicates
-    if (nrow(DF_duplicates) > 0) {
-      input_files_duplicates = DF_duplicates %>% distinct(filename) %>% pull(filename)
-      warning("\n[WARNING]: There are duplicates in the '/data' input files: \n\n - ", paste(input_files_duplicates, collapse = "\n - "))
-    }
-
-    # IF any of the duplicates are in the Bank experiment (last task), ERROR!
-    if (nrow(DF_duplicates %>% filter(experimento == "Bank")) > 0) {
-      input_files_duplicates = DF_duplicates %>% filter(experimento == "Bank") %>% distinct(filename) %>% pull(filename)
-      stop("\n[ERROR]: There are duplicates in the BANK experiment in the '/data' input files: \n\n - ", paste(input_files_duplicates, collapse = "\n - "))
-    }
-    
-    DF_bank_duplicates = DF_raw %>% filter(trialid == "Bank_02") %>% count(responses) %>% arrange(desc(n)) %>% filter(n > 1)
-    if (nrow(DF_bank_duplicates) > 0) {
-      input_files_duplicates = DF_bank_duplicates %>% distinct(responses) %>% pull(responses)
-      stop("\n[ERROR]: The following RUTs are duplicate in the BANK experiment in the '/data' input files: \n\n - ", paste(input_files_duplicates, collapse = "\n - "))
-    }
-    
-    
   
     
   # Save files --------------------------------------------------------------
