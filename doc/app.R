@@ -10,7 +10,7 @@ DF_analysis = read_csv(here::here("output/data/DF_analysis.csv"),
 
 # targets::tar_load(DF_analysis)
 
-names_variables = names(DF_analysis)
+names_variables = names(DF_analysis)[-1]
 
 
 # Define UI for random distribution app ----
