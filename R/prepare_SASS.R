@@ -35,8 +35,8 @@ prepare_SASS <- function(DF_clean, short_name_scale_str) {
   
   # [ADAPT] -------------------
   items_to_ignore = c("01") # Ignore the following items: If nothing to ignore, keep "00|00"
-  items_to_reverse = c("18|19|21") # Reverse the following items. # [REMEMBER]: REVISAR https://github.com/HeRm4nV/CSCN_Maker/issues/27 
-  # REMEMBER ITEMS 2 and 3 both are in reality item 2?
+  items_to_reverse = c("18", "19", "21") # Reverse the following items. # [REMEMBER]: REVISAR https://github.com/HeRm4nV/CSCN_Maker/issues/27 
+  # REMEMBER ITEMS 2 and 3 both are two instances of the "same" item (work/home)
   
   # ***************************
   
@@ -66,7 +66,8 @@ prepare_SASS <- function(DF_clean, short_name_scale_str) {
       DIR = 
         case_when(
           DIR == 9999 ~ DIR, # To keep the missing values unchanged
-          grepl(items_to_reverse, trialid) ~ (3 - DIR),
+          trialid %in% paste0(short_name_scale_str, "_", items_to_reverse) ~ (3 - DIR),
+          # grepl(items_to_reverse, trialid) ~ (3 - DIR),
           TRUE ~ DIR
         )
     )
@@ -75,9 +76,10 @@ prepare_SASS <- function(DF_clean, short_name_scale_str) {
   # ****************************************************************************
     
 
-  # Create DF_wide_RAW_DIR -----------------------------------------------------
-  DF_wide_RAW_DIR =
-    DF_long_DIR %>% 
+  # Create DF_wide_RAW -----------------------------------------------------
+  
+  DF_wide_RAW =
+    DF_long_DIR %>%  
     pivot_wider(
       names_from = trialid, 
       values_from = c(RAW, DIR),
@@ -85,21 +87,35 @@ prepare_SASS <- function(DF_clean, short_name_scale_str) {
     
     # NAs for RAW and DIR items
     mutate(!!name_RAW_NA := rowSums(is.na(select(., -matches(items_to_ignore) & matches("_RAW")))),
-           !!name_DIR_NA := rowSums(is.na(select(., -matches(items_to_ignore) & matches("_DIR"))))) %>% 
-      
-    
+           !!name_DIR_NA := rowSums(is.na(select(., -matches(items_to_ignore) & matches("_DIR")))))
+  
+  
+  # Reliability -------------------------------------------------------------
+  
+  RELt = auto_reliability(DF_wide_RAW, short_name_scale = short_name_scale_str)
+  # REVIEW: EN ESTE CASO, los items 02 y 03 NO ENTRAN EN alphadrop_me() pq tienen NA's, pero SI los incluimos aqui (???) ------
+  items_RELt = c("02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "21", "22")
+  
+  
+  
   # [ADAPT]: Scales and dimensions calculations --------------------------------
   # ****************************************************************************
     # [USE STANDARD NAMES FOR Scales and dimensions: name_DIRt, name_DIRd1, etc.] Check with: standardized_names(help_names = TRUE)
-
+  
+  DF_wide_RAW_DIR =
+    DF_wide_RAW %>% 
+    
     mutate(
 
       # Score Dimensions (use 3 digit item numbers)
       # !!name_DIRd1 := rowSums(select(., matches("02|04|05") & matches("_DIR$")), na.rm = TRUE), 
-      # !!name_DIRd2 := rowSums(select(., matches("01|03|08") & matches("_DIR$")), na.rm = TRUE), 
-      
+
       # Score Scale
-      !!name_DIRt := rowSums(select(., matches("_DIR$")), na.rm = TRUE)
+      !!name_DIRt := rowSums(select(., matches("_DIR$")), na.rm = TRUE),
+      
+      # Reliability Scale 
+      !!name_RELt := rowSums(select(., paste0(short_name_scale_str, "_", items_RELt, "_DIR")), na.rm = TRUE)
+      # !!name_DIRd6 := rowMeans(select(., paste0(short_name_scale_str, "_", items_DIRd6, "_DIR")), na.rm = TRUE), 
       
     )
     

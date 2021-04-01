@@ -24,7 +24,7 @@ prepare_REI40 <- function(DF_clean, short_name_scale_str) {
   # ****************************************************************************
   
   items_to_ignore = c("00") # Ignore the following items: If nothing to ignore, keep "00"
-  items_to_reverse = c("01", "02", "03", "04", "05", "11", "13", "15", "17", "19", "21", "26", "28", "30", "34", "36", "37", "38") # Reverse the following items: If nothing to ignore, keep "00"
+  items_to_reverse = c("01", "02", "03", "04", "05", "11", "13", "15", "17", "19", "21", "26", "28", "30", "34", "36", "37", "38") # Reverse the following items: If nothing to reverse, keep "00"
   
   items_DIRd1 = c("01", "02", "03", "04", "05", "06", "07", "08", "09", "10")
   items_DIRd2 = c("11", "12", "13", "14", "15", "16", "17", "18", "19", "20")
@@ -77,7 +77,7 @@ prepare_REI40 <- function(DF_clean, short_name_scale_str) {
     
 
   # Create DF_wide_RAW_DIR -----------------------------------------------------
-  DF_wide_RAW_DIR =
+  DF_wide_RAW =
     DF_long_DIR %>% 
     pivot_wider(
       names_from = trialid, 
@@ -86,13 +86,33 @@ prepare_REI40 <- function(DF_clean, short_name_scale_str) {
     
     # NAs for RAW and DIR items
     mutate(!!name_RAW_NA := rowSums(is.na(select(., matches("_RAW")))),
-           !!name_DIR_NA := rowSums(is.na(select(., matches("_DIR"))))) %>% 
-      
+           !!name_DIR_NA := rowSums(is.na(select(., matches("_DIR")))))
+  
+
+  
+  # Reliability -------------------------------------------------------------
+  
+  REL1 = auto_reliability(DF_wide_RAW, short_name_scale = short_name_scale_str, items = items_DIRd1)
+  REL2 = auto_reliability(DF_wide_RAW, short_name_scale = short_name_scale_str, items = items_DIRd2)
+  REL3 = auto_reliability(DF_wide_RAW, short_name_scale = short_name_scale_str, items = items_DIRd3)
+  REL4 = auto_reliability(DF_wide_RAW, short_name_scale = short_name_scale_str, items = items_DIRd4)
+  REL5 = auto_reliability(DF_wide_RAW, short_name_scale = short_name_scale_str, items = items_DIRd5)
+  REL6 = auto_reliability(DF_wide_RAW, short_name_scale = short_name_scale_str, items = items_DIRd6)
     
+  items_RELd1 = items_DIRd1[items_DIRd1 %in% REL1$item_selection_string]
+  items_RELd2 = items_DIRd2[items_DIRd2 %in% REL2$item_selection_string]
+  items_RELd3 = items_DIRd3[items_DIRd3 %in% REL3$item_selection_string]
+  items_RELd4 = items_DIRd4[items_DIRd4 %in% REL4$item_selection_string]
+  items_RELd5 = items_DIRd5[items_DIRd5 %in% REL5$item_selection_string]
+  items_RELd6 = items_DIRd6[items_DIRd6 %in% REL6$item_selection_string]
+  
+  
   # [ADAPT]: Scales and dimensions calculations --------------------------------
   # ****************************************************************************
     # [USE STANDARD NAMES FOR Scales and dimensions: name_DIRt, name_DIRd1, etc.] Check with: standardized_names(help_names = TRUE)
 
+  DF_wide_RAW_DIR =
+    DF_wide_RAW %>% 
     mutate(
 
       # Score Dimensions (see standardized_names(help_names = TRUE) for instructions)
@@ -101,10 +121,20 @@ prepare_REI40 <- function(DF_clean, short_name_scale_str) {
       !!name_DIRd3 := rowMeans(select(., paste0(short_name_scale_str, "_", items_DIRd3, "_DIR")), na.rm = TRUE), 
       !!name_DIRd4 := rowMeans(select(., paste0(short_name_scale_str, "_", items_DIRd4, "_DIR")), na.rm = TRUE), 
       
-      # Meta-dimensions
+      # Score Meta-dimensions
       !!name_DIRd5 := rowMeans(select(., paste0(short_name_scale_str, "_", items_DIRd5, "_DIR")), na.rm = TRUE), 
       !!name_DIRd6 := rowMeans(select(., paste0(short_name_scale_str, "_", items_DIRd6, "_DIR")), na.rm = TRUE), 
 
+      # Reliability Dimensions (see standardized_names(help_names = TRUE) for instructions)
+      !!name_RELd1 := rowMeans(select(., paste0(short_name_scale_str, "_", items_RELd1, "_DIR")), na.rm = TRUE), 
+      !!name_RELd2 := rowMeans(select(., paste0(short_name_scale_str, "_", items_RELd2, "_DIR")), na.rm = TRUE),
+      !!name_RELd3 := rowMeans(select(., paste0(short_name_scale_str, "_", items_RELd3, "_DIR")), na.rm = TRUE), 
+      !!name_RELd4 := rowMeans(select(., paste0(short_name_scale_str, "_", items_RELd4, "_DIR")), na.rm = TRUE), 
+      
+      # Reliability Meta-dimensions
+      !!name_RELd5 := rowMeans(select(., paste0(short_name_scale_str, "_", items_RELd5, "_DIR")), na.rm = TRUE), 
+      !!name_RELd6 := rowMeans(select(., paste0(short_name_scale_str, "_", items_RELd6, "_DIR")), na.rm = TRUE), 
+      
       # Score Scale
       # !!name_DIRt := rowMeans(select(., matches("_DIR$")), na.rm = TRUE)
       
