@@ -19,9 +19,29 @@ prepare_PWb <- function(DF_clean, short_name_scale_str) {
   # DEBUG
   # debug_function(prepare_PWb)
 
+  
+  # [ADAPT]: Items to ignore, reverse and dimensions ---------------------------------------
+  # ****************************************************************************
+  
+  items_to_ignore = c("00") # Ignore these items: If nothing to ignore, keep items_to_ignore = c("00")
+  items_to_reverse = c("04", "05", "08", "09", "13", "15", "20", "22", "25", "26", "27", "29", "30", "33", "34", "36") # Reverse these items: If nothing to reverse, keep  items_to_reverse = c("00")
+  
+  names_dimensions = c("Autoaceptacion", "RelacionesPositivas", "Autonomia", "DominioEntorno", "CrecimientoPersonal", "PropositoVida") # If no dimensions, keep names_dimensions = c("")
+  
+  items_DIRd1 = c("01", "07", "13", "19", "25", "31")
+  items_DIRd2 = c("02", "08", "14", "20", "26", "32")
+  items_DIRd3 = c("03", "04", "09", "10", "15", "21", "27", "33")
+  items_DIRd4 = c("05", "11", "16", "22", "28", "39")
+  items_DIRd5 = c("24", "30", "34", "35", "36", "37", "38")
+  items_DIRd6 = c("06", "12", "17", "18", "23", "29")
+  
+  # [END ADAPT]: ***************************************************************
+  # ****************************************************************************
+  
+  
   # Standardized names ------------------------------------------------------
   standardized_names(short_name_scale = short_name_scale_str, 
-                     dimensions = c("Autoaceptacion", "RelacionesPositivas", "Autonomia", "DominioEntorno", "CrecimientoPersonal", "PropositoVida"), # Use names of dimensions, "" or comment out line
+                     dimensions = names_dimensions,
                      help_names = FALSE) # help_names = FALSE once the script is ready
   
   # Create long -------------------------------------------------------------
@@ -33,15 +53,7 @@ prepare_PWb <- function(DF_clean, short_name_scale_str) {
   
   # Create long DIR ------------------------------------------------------------
   
-  # [ADAPT]: Items to ignore and reverse ---------------------------------------
-  # ****************************************************************************
-  
-  items_to_ignore = c("00|00") # Ignore the following items: If nothing to ignore, keep "00|00"
-  items_to_reverse = c("04|05|08|09|13|15|20|22|25|26|27|29|30|33|34|36") # Reverse the following items: If nothing to ignore, keep "00|00"
-  
-  # [END ADAPT]: ***************************************************************
-  # ****************************************************************************
-  
+
   
   DF_long_DIR = 
     DF_long_RAW %>% 
@@ -61,7 +73,7 @@ prepare_PWb <- function(DF_clean, short_name_scale_str) {
       DIR = 
         case_when(
           DIR == 9999 ~ DIR, # To keep the missing values unchanged
-          grepl(items_to_reverse, trialid) ~ (7 - DIR),
+          trialid %in% paste0(short_name_scale_str, "_", items_to_reverse) ~ (7 - DIR),
           TRUE ~ DIR
         )
     )
@@ -71,7 +83,7 @@ prepare_PWb <- function(DF_clean, short_name_scale_str) {
     
 
   # Create DF_wide_RAW_DIR -----------------------------------------------------
-  DF_wide_RAW_DIR =
+  DF_wide_RAW =
     DF_long_DIR %>% 
     pivot_wider(
       names_from = trialid, 
@@ -79,23 +91,25 @@ prepare_PWb <- function(DF_clean, short_name_scale_str) {
       names_glue = "{trialid}_{.value}") %>% 
     
     # NAs for RAW and DIR items
-    mutate(!!name_RAW_NA := rowSums(is.na(select(., -matches(items_to_ignore) & matches("_RAW")))),
-           !!name_DIR_NA := rowSums(is.na(select(., -matches(items_to_ignore) & matches("_DIR"))))) %>% 
+    mutate(!!name_RAW_NA := rowSums(is.na(select(., -matches(paste0(short_name_scale_str, "_", items_to_ignore, "_RAW")) & matches("_RAW$")))),
+           !!name_DIR_NA := rowSums(is.na(select(., -matches(paste0(short_name_scale_str, "_", items_to_ignore, "_DIR")) & matches("_DIR$")))))
       
     
   # [ADAPT]: Scales and dimensions calculations --------------------------------
   # ****************************************************************************
     # [USE STANDARD NAMES FOR Scales and dimensions: name_DIRt, name_DIRd1, etc.] Check with: standardized_names(help_names = TRUE)
 
+  DF_wide_RAW_DIR = 
+    DF_wide_RAW %>% 
     mutate(
 
       # Score Dimensions (see standardized_names(help_names = TRUE) for instructions)
-      !!name_DIRd1 := rowSums(select(., matches("01|07|13|19|25|31") & matches("_DIR$")), na.rm = TRUE), 
-      !!name_DIRd2 := rowSums(select(., matches("02|08|14|20|26|32") & matches("_DIR$")), na.rm = TRUE),
-      !!name_DIRd3 := rowSums(select(., matches("03|04|09|10|15|21|27|33") & matches("_DIR$")), na.rm = TRUE), 
-      !!name_DIRd4 := rowSums(select(., matches("05|11|16|22|28|39") & matches("_DIR$")), na.rm = TRUE), 
-      !!name_DIRd5 := rowSums(select(., matches("24|30|34|35|36|37|38") & matches("_DIR$")), na.rm = TRUE), 
-      !!name_DIRd6 := rowSums(select(., matches("06|12|17|18|23|29") & matches("_DIR$")), na.rm = TRUE), 
+      !!name_DIRd1 := rowSums(select(., paste0(short_name_scale_str, "_", items_DIRd1, "_DIR")), na.rm = TRUE), 
+      !!name_DIRd2 := rowSums(select(., paste0(short_name_scale_str, "_", items_DIRd2, "_DIR")), na.rm = TRUE),
+      !!name_DIRd3 := rowSums(select(., paste0(short_name_scale_str, "_", items_DIRd3, "_DIR")), na.rm = TRUE), 
+      !!name_DIRd4 := rowSums(select(., paste0(short_name_scale_str, "_", items_DIRd4, "_DIR")), na.rm = TRUE),
+      !!name_DIRd5 := rowSums(select(., paste0(short_name_scale_str, "_", items_DIRd5, "_DIR")), na.rm = TRUE),
+      !!name_DIRd6 := rowSums(select(., paste0(short_name_scale_str, "_", items_DIRd6, "_DIR")), na.rm = TRUE),
       
       # Score Scale
       !!name_DIRt := rowSums(select(., matches("_DIR$")), na.rm = TRUE)

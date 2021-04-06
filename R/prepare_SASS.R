@@ -19,9 +19,23 @@ prepare_SASS <- function(DF_clean, short_name_scale_str) {
   # DEBUG
   # debug_function(prepare_SASS)
 
+  # [ADAPT]: Items to ignore, reverse and dimensions ---------------------------------------
+  # ****************************************************************************
+  
+  items_to_ignore = c("01") # Ignore these items: If nothing to ignore, keep items_to_ignore = c("00")
+  items_to_reverse = c("18", "19", "21") # Reverse these items: If nothing to reverse, keep  items_to_reverse = c("00")
+  # [REMEMBER]: REVISAR https://github.com/HeRm4nV/CSCN_Maker/issues/27 
+  # REMEMBER ITEMS 2 and 3 both are two instances of the "same" item (work/home)
+  
+  names_dimensions = c("") # If no dimensions, keep names_dimensions = c("")
+  
+  # [END ADAPT]: ***************************************************************
+  # ****************************************************************************
+  
+  
   # Standardized names ------------------------------------------------------
   standardized_names(short_name_scale = short_name_scale_str, 
-                     # dimensions = c("NameDimension1", "NameDimension2"), # Use names of dimensions, "" or comment out line
+                     dimensions = names_dimensions, # Use names of dimensions, "" or comment out line
                      help_names = FALSE) # help_names = FALSE once the script is ready
   
   # Create long -------------------------------------------------------------
@@ -32,13 +46,6 @@ prepare_SASS <- function(DF_clean, short_name_scale_str) {
   
   
   # Create long DIR ------------------------------------------------------------
-  
-  # [ADAPT] -------------------
-  items_to_ignore = c("01") # Ignore the following items: If nothing to ignore, keep "00|00"
-  items_to_reverse = c("18", "19", "21") # Reverse the following items. # [REMEMBER]: REVISAR https://github.com/HeRm4nV/CSCN_Maker/issues/27 
-  # REMEMBER ITEMS 2 and 3 both are two instances of the "same" item (work/home)
-  
-  # ***************************
   
   DF_long_DIR =
     DF_long_RAW %>% 
@@ -56,7 +63,7 @@ prepare_SASS <- function(DF_clean, short_name_scale_str) {
           grepl("Medianamente|Algo de gozo|Algo de entusiasmo|Buena|Bueno|Frecuentemente|Algunas personas|Activamente|A menudo|La mayor parte del tiempo|Algún valor|Moderadamente", RAW) ~ 2,
           grepl("Mucho|Mucho entusiasmo|Muy buena|Muy bueno|Muy frecuente|Muchas personas|Muy activamente|Gran valor|Muy a menudo|Siempre|Completamente|Muchísimo", RAW) ~ 3,
           is.na(RAW) ~ NA_real_,
-          grepl(items_to_ignore, trialid) ~ NA_real_,
+          trialid %in% paste0(short_name_scale_str, "_", items_to_ignore) ~ NA_real_,
           TRUE ~ 9999
         )
     ) %>% 
@@ -67,7 +74,6 @@ prepare_SASS <- function(DF_clean, short_name_scale_str) {
         case_when(
           DIR == 9999 ~ DIR, # To keep the missing values unchanged
           trialid %in% paste0(short_name_scale_str, "_", items_to_reverse) ~ (3 - DIR),
-          # grepl(items_to_reverse, trialid) ~ (3 - DIR),
           TRUE ~ DIR
         )
     )
@@ -86,15 +92,15 @@ prepare_SASS <- function(DF_clean, short_name_scale_str) {
       names_glue = "{trialid}_{.value}") %>% 
     
     # NAs for RAW and DIR items
-    mutate(!!name_RAW_NA := rowSums(is.na(select(., -matches(items_to_ignore) & matches("_RAW")))),
-           !!name_DIR_NA := rowSums(is.na(select(., -matches(items_to_ignore) & matches("_DIR")))))
+    mutate(!!name_RAW_NA := rowSums(is.na(select(., -matches(paste0(short_name_scale_str, "_", items_to_ignore, "_RAW")) & matches("_RAW$")))),
+           !!name_DIR_NA := rowSums(is.na(select(., -matches(paste0(short_name_scale_str, "_", items_to_ignore, "_DIR")) & matches("_DIR$")))))
   
   
   # Reliability -------------------------------------------------------------
   
   RELt = auto_reliability(DF_wide_RAW, short_name_scale = short_name_scale_str)
+  items_RELt = c("02", "03", RELt$item_selection_string)
   # REVIEW: EN ESTE CASO, los items 02 y 03 NO ENTRAN EN alphadrop_me() pq tienen NA's, pero SI los incluimos aqui (???) ------
-  items_RELt = c("02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "21", "22")
   
   
   

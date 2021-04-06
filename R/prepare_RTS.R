@@ -19,10 +19,23 @@ prepare_RTS <- function(DF_clean, short_name_scale_str) {
   # DEBUG
   # debug_function(prepare_RTS)
 
+  # [ADAPT]: Items to ignore, reverse and dimensions ---------------------------------------
+  # ****************************************************************************
+  
+  items_to_ignore = c("01", "06", "07", "10", "11", "14", "15", "17", "23", "24", "27", "28") # Ignore these items: If nothing to ignore, keep items_to_ignore = c("00")
+  items_to_reverse = c("00") # Reverse these items: If nothing to reverse, keep  items_to_reverse = c("00")
+  
+  names_dimensions = c("") # If no dimensions, keep names_dimensions = c("")
+  
+  # [END ADAPT]: ***************************************************************
+  # ****************************************************************************
+  
+  
   # Standardized names ------------------------------------------------------
   standardized_names(short_name_scale = short_name_scale_str, 
-                     # dimensions = c("NameDimension1", "NameDimension2"), # Use names of dimensions, "" or comment out line
+                     dimensions = names_dimensions,
                      help_names = FALSE) # help_names = FALSE once the script is ready
+  
   
   # Create long -------------------------------------------------------------
   DF_long_RAW = create_raw_long(DF_clean, short_name_scale = short_name_scale_str, numeric_responses = FALSE)
@@ -32,12 +45,7 @@ prepare_RTS <- function(DF_clean, short_name_scale_str) {
   
   
   # Create long DIR ------------------------------------------------------------
-  
-  # [ADAPT] -------------------
-  items_to_ignore = c("01|06|07|10|11|14|15|17|23|24|27|28") # Ignore the following items
-  # ***************************
-  
-  
+
   DF_long_DIR = 
     DF_long_RAW %>% 
     select(id, trialid, RAW) %>%
@@ -52,7 +60,7 @@ prepare_RTS <- function(DF_clean, short_name_scale_str) {
           grepl("02|03|04|05|08|09|12|13|16|18|19|20|21|22|25|26|29", trialid) & RAW == "Verdadero" ~ 1,
           grepl("02|03|04|05|08|09|12|13|16|18|19|20|21|22|25|26|29", trialid) & RAW == "Falso" ~ 0,
           is.na(RAW) ~ NA_real_,
-          grepl(items_to_ignore, trialid) ~ NA_real_,
+          trialid %in% paste0(short_name_scale_str, "_", items_to_ignore) ~ NA_real_,
           TRUE ~ 9999
         )
     ) 
@@ -62,7 +70,7 @@ prepare_RTS <- function(DF_clean, short_name_scale_str) {
     
 
   # Create DF_wide_RAW_DIR -----------------------------------------------------
-  DF_wide_RAW_DIR =
+  DF_wide_RAW =
     DF_long_DIR %>% 
     pivot_wider(
       names_from = trialid, 
@@ -70,14 +78,16 @@ prepare_RTS <- function(DF_clean, short_name_scale_str) {
       names_glue = "{trialid}_{.value}") %>% 
     
     # NAs for RAW and DIR items
-    mutate(!!name_RAW_NA := rowSums(is.na(select(., -matches(items_to_ignore) & matches("_RAW")))),
-           !!name_DIR_NA := rowSums(is.na(select(., -matches(items_to_ignore) & matches("_DIR"))))) %>% 
+    mutate(!!name_RAW_NA := rowSums(is.na(select(., -matches(paste0(short_name_scale_str, "_", items_to_ignore, "_RAW")) & matches("_RAW$")))),
+           !!name_DIR_NA := rowSums(is.na(select(., -matches(paste0(short_name_scale_str, "_", items_to_ignore, "_DIR")) & matches("_DIR$")))))
       
     
   # [ADAPT]: Scales and dimensions calculations --------------------------------
   # ****************************************************************************
     # [USE STANDARD NAMES FOR Scales and dimensions: name_DIRt, name_DIRd1, etc.] Check with: standardized_names(help_names = TRUE)
 
+  DF_wide_RAW_DIR = 
+    DF_wide_RAW %>% 
     mutate(
 
       # # Score Dimensions (use 3 digit item numbers)

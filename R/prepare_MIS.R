@@ -19,9 +19,22 @@ prepare_MIS <- function(DF_clean, short_name_scale_str) {
   # DEBUG
   # debug_function(prepare_MIS)
 
+  
+  # [ADAPT]: Items to ignore, reverse and dimensions ---------------------------------------
+  # ****************************************************************************
+  
+  items_to_ignore = c("00") # Ignore these items: If nothing to ignore, keep items_to_ignore = c("00")
+  items_to_reverse = c("07", "12", "13", "16", "18", "23", "24") # Reverse these items: If nothing to reverse, keep  items_to_reverse = c("00")
+  
+  names_dimensions = c("") # If no dimensions, keep names_dimensions = c("")
+
+  # [END ADAPT]: ***************************************************************
+  # ****************************************************************************
+  
+  
   # Standardized names ------------------------------------------------------
   standardized_names(short_name_scale = short_name_scale_str, 
-                     dimensions = c("", ""), 
+                     dimensions = c(""), 
                      help_names = FALSE) # help_names = FALSE once the script is ready
   
   # Create long -------------------------------------------------------------
@@ -49,13 +62,12 @@ prepare_MIS <- function(DF_clean, short_name_scale_str) {
           TRUE ~ 9999
         )) %>% 
     
-  # Invert items 07|12|13|16|18|23|24
-  # [TODO]: Item id's will be 3 digits: 007|012... 
+  # Invert items
     mutate(
       DIR = 
         case_when(
           DIR == 9999 ~ DIR,
-          grepl("07|12|13|16|18|23|24", trialid) ~ (1 - DIR),
+          trialid %in% paste0(short_name_scale_str, "_", items_to_reverse) ~ (1 - DIR),
           TRUE ~ DIR
         )
     )
@@ -65,7 +77,7 @@ prepare_MIS <- function(DF_clean, short_name_scale_str) {
     
 
   # Create DF_wide_RAW_DIR -----------------------------------------------------
-  DF_wide_RAW_DIR =
+  DF_wide_RAW =
     DF_long_DIR %>% 
     pivot_wider(
       names_from = trialid, 
@@ -73,14 +85,16 @@ prepare_MIS <- function(DF_clean, short_name_scale_str) {
       names_glue = "{trialid}_{.value}") %>% 
     
     # NAs for RAW and DIR items
-    mutate(!!name_RAW_NA := rowSums(is.na(select(., matches("_RAW")))),
-           !!name_DIR_NA := rowSums(is.na(select(., matches("_DIR"))))) %>% 
+    mutate(!!name_RAW_NA := rowSums(is.na(select(., -matches(paste0(short_name_scale_str, "_", items_to_ignore, "_RAW")) & matches("_RAW$")))),
+           !!name_DIR_NA := rowSums(is.na(select(., -matches(paste0(short_name_scale_str, "_", items_to_ignore, "_DIR")) & matches("_DIR$")))))
       
     
   # [ADAPT]: Scales and dimensions calculations --------------------------------
   # ****************************************************************************
     # [USE STANDARD NAMES FOR Scales and dimensions] Check with: standardized_names()
 
+  DF_wide_RAW_DIR =
+    DF_wide_RAW %>% 
     mutate(
       
       # Score Scale
