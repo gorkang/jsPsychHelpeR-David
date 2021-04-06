@@ -110,11 +110,11 @@ prepare_CRS <- function(DF_clean, short_name_scale_str) {
 
   # Reliability -------------------------------------------------------------
 
-  REL1 = auto_reliability(DF_wide_RAW, items = items_DIRd1)
-  REL2 = auto_reliability(DF_wide_RAW, items = items_DIRd2)
-  REL3 = auto_reliability(DF_wide_RAW, items = items_DIRd3)
-  REL4 = auto_reliability(DF_wide_RAW, items = items_DIRd4)
-  REL5 = auto_reliability(DF_wide_RAW, items = items_DIRd5)
+  REL1 = auto_reliability(DF_wide_RAW, short_name_scale = short_name_scale_str, items = items_DIRd1)
+  REL2 = auto_reliability(DF_wide_RAW, short_name_scale = short_name_scale_str, items = items_DIRd2)
+  REL3 = auto_reliability(DF_wide_RAW, short_name_scale = short_name_scale_str, items = items_DIRd3)
+  REL4 = auto_reliability(DF_wide_RAW, short_name_scale = short_name_scale_str, items = items_DIRd4)
+  REL5 = auto_reliability(DF_wide_RAW, short_name_scale = short_name_scale_str, items = items_DIRd5)
   
   items_RELd1 = REL1$item_selection_string
   items_RELd2 = REL2$item_selection_string
