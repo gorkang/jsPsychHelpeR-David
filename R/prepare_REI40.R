@@ -23,8 +23,10 @@ prepare_REI40 <- function(DF_clean, short_name_scale_str) {
   # [ADAPT]: Items to ignore and reverse ---------------------------------------
   # ****************************************************************************
   
-  items_to_ignore = c("00") # Ignore the following items: If nothing to ignore, keep "00"
-  items_to_reverse = c("01", "02", "03", "04", "05", "11", "13", "15", "17", "19", "21", "26", "28", "30", "34", "36", "37", "38") # Reverse the following items: If nothing to reverse, keep "00"
+  items_to_ignore = c("00") # Ignore these items: If nothing to ignore, keep items_to_ignore = c("00")
+  items_to_reverse = c("01", "02", "03", "04", "05", "11", "13", "15", "17", "19", "21", "26", "28", "30", "34", "36", "37", "38") # Reverse these items: If nothing to reverse, keep  items_to_reverse = c("00")
+  
+  names_dimensions = c("RationalAbility", "RationalEngagement", "ExperientialAbility", "ExperiencialEngagement", "Rational", "Experiential") # If no dimensions, keep names_dimensions = c("")
   
   items_DIRd1 = c("01", "02", "03", "04", "05", "06", "07", "08", "09", "10")
   items_DIRd2 = c("11", "12", "13", "14", "15", "16", "17", "18", "19", "20")
@@ -39,7 +41,7 @@ prepare_REI40 <- function(DF_clean, short_name_scale_str) {
   
   # Standardized names ------------------------------------------------------
   standardized_names(short_name_scale = short_name_scale_str, 
-                     dimensions = c("RationalAbility", "RationalEngagement", "ExperientialAbility", "ExperiencialEngagement", "Rational", "Experiential"), # Use names of dimensions, "" or comment out line
+                     dimensions = names_dimensions,
                      help_names = FALSE) # help_names = FALSE once the script is ready
   
   # Create long -------------------------------------------------------------
@@ -85,8 +87,8 @@ prepare_REI40 <- function(DF_clean, short_name_scale_str) {
       names_glue = "{trialid}_{.value}") %>% 
     
     # NAs for RAW and DIR items
-    mutate(!!name_RAW_NA := rowSums(is.na(select(., matches("_RAW")))),
-           !!name_DIR_NA := rowSums(is.na(select(., matches("_DIR")))))
+    mutate(!!name_RAW_NA := rowSums(is.na(select(., -matches(paste0(short_name_scale_str, "_", items_to_ignore, "_RAW"))))),
+           !!name_DIR_NA := rowSums(is.na(select(., -matches(paste0(short_name_scale_str, "_", items_to_ignore, "_DIR"))))))
   
 
   
@@ -120,23 +122,19 @@ prepare_REI40 <- function(DF_clean, short_name_scale_str) {
       !!name_DIRd2 := rowMeans(select(., paste0(short_name_scale_str, "_", items_DIRd2, "_DIR")), na.rm = TRUE),
       !!name_DIRd3 := rowMeans(select(., paste0(short_name_scale_str, "_", items_DIRd3, "_DIR")), na.rm = TRUE), 
       !!name_DIRd4 := rowMeans(select(., paste0(short_name_scale_str, "_", items_DIRd4, "_DIR")), na.rm = TRUE), 
-      
       # Score Meta-dimensions
       !!name_DIRd5 := rowMeans(select(., paste0(short_name_scale_str, "_", items_DIRd5, "_DIR")), na.rm = TRUE), 
       !!name_DIRd6 := rowMeans(select(., paste0(short_name_scale_str, "_", items_DIRd6, "_DIR")), na.rm = TRUE), 
 
+      
       # Reliability Dimensions (see standardized_names(help_names = TRUE) for instructions)
       !!name_RELd1 := rowMeans(select(., paste0(short_name_scale_str, "_", items_RELd1, "_DIR")), na.rm = TRUE), 
       !!name_RELd2 := rowMeans(select(., paste0(short_name_scale_str, "_", items_RELd2, "_DIR")), na.rm = TRUE),
       !!name_RELd3 := rowMeans(select(., paste0(short_name_scale_str, "_", items_RELd3, "_DIR")), na.rm = TRUE), 
-      !!name_RELd4 := rowMeans(select(., paste0(short_name_scale_str, "_", items_RELd4, "_DIR")), na.rm = TRUE), 
-      
+      !!name_RELd4 := rowMeans(select(., paste0(short_name_scale_str, "_", items_RELd4, "_DIR")), na.rm = TRUE),
       # Reliability Meta-dimensions
       !!name_RELd5 := rowMeans(select(., paste0(short_name_scale_str, "_", items_RELd5, "_DIR")), na.rm = TRUE), 
       !!name_RELd6 := rowMeans(select(., paste0(short_name_scale_str, "_", items_RELd6, "_DIR")), na.rm = TRUE), 
-      
-      # Score Scale
-      # !!name_DIRt := rowMeans(select(., matches("_DIR$")), na.rm = TRUE)
       
     )
     

@@ -19,9 +19,25 @@ prepare_ERQ <- function(DF_clean, short_name_scale_str) {
   # DEBUG
   # debug_function(prepare_ERQ)
 
+  
+  # [ADAPT]: Items to ignore, reverse and dimensions ---------------------------------------
+  # ****************************************************************************
+  
+  items_to_ignore = c("00") # Ignore these items: If nothing to ignore, keep items_to_ignore = c("00")
+  items_to_reverse = c("00") # Reverse these items: If nothing to reverse, keep  items_to_reverse = c("00")
+  
+  names_dimensions = c("ReEvaluacionCognitiva", "SupresionEmocional") # If no dimensions, keep names_dimensions = c("")
+  
+  items_DIRd1 = c("01", "03", "05", "07", "08", "10")
+  items_DIRd2 = c("02", "04", "06", "09")
+  
+  # [END ADAPT]: ***************************************************************
+  # ****************************************************************************
+  
+  
   # Standardized names ------------------------------------------------------
   standardized_names(short_name_scale = short_name_scale_str,
-                     dimensions = c("ReEvaluacionCognitiva", "SupresionEmocional"), # Use names of dimensions, "" or comment out line
+                     dimensions = names_dimensions,
                      help_names = FALSE) # help_names = FALSE once the script is ready
 
   # Create long -------------------------------------------------------------
@@ -68,8 +84,8 @@ prepare_ERQ <- function(DF_clean, short_name_scale_str) {
     mutate(
 
       # Score Dimensions (use 3 digit item numbers)
-      !!name_DIRd1 := rowSums(select(., matches("01|03|05|07|08|10") & matches("_DIR$")), na.rm = TRUE), 
-      !!name_DIRd2 := rowSums(select(., matches("02|04|06|09") & matches("_DIR$")), na.rm = TRUE),
+      !!name_DIRd1 := rowSums(select(., paste0(short_name_scale_str, "_", items_DIRd1, "_DIR")), na.rm = TRUE), 
+      !!name_DIRd2 := rowSums(select(., paste0(short_name_scale_str, "_", items_DIRd2, "_DIR")), na.rm = TRUE),
 
       # Score Scale
       !!name_DIRt := rowSums(select(., matches("_DIR$")), na.rm = TRUE)

@@ -23,8 +23,10 @@ prepare_CRS <- function(DF_clean, short_name_scale_str) {
   # [ADAPT]: Items to ignore and reverse ---------------------------------------
   # ****************************************************************************
   
-  items_to_ignore = c("00") # Ignore the following items: If nothing to ignore, keep "00"
-  items_to_reverse = c("00") # Reverse the following items: If nothing to reverse, keep "00"
+  items_to_ignore = c("00") # Ignore these items: If nothing to ignore, keep items_to_ignore = c("00")
+  items_to_reverse = c("00") # Reverse these items: If nothing to reverse, keep  items_to_reverse = c("00")
+  
+  names_dimensions = c("Intelectual", "Ideologica", "PracticaPublica", "PracticaPrivada", "ExperienciaReligiosa") # If no dimensions, keep names_dimensions = c("")
   
   items_DIRd1 = c("01", "08", "15")
   items_DIRd2 = c("02", "09", "16")
@@ -38,7 +40,7 @@ prepare_CRS <- function(DF_clean, short_name_scale_str) {
   
   # Standardized names ------------------------------------------------------
   standardized_names(short_name_scale = short_name_scale_str, 
-                     dimensions = c("Intelectual", "Ideologica", "PracticaPublica", "PracticaPrivada", "ExperienciaReligiosa"), # Use names of dimensions, "" or comment out line
+                     dimensions = names_dimensions,
                      help_names = FALSE) # help_names = FALSE once the script is ready
   
   # Create long -------------------------------------------------------------
@@ -72,8 +74,21 @@ prepare_CRS <- function(DF_clean, short_name_scale_str) {
           RAW == "Un poco" ~ 2,
           RAW == "Nada" ~ 1,
 
+          # is.na(RAW) ~ NA_real_,
+          # trialid %in% paste0(short_name_scale_str, "_", items_to_ignore) ~ NA_real_,
           TRUE ~ 9999
-        )) #%>% filter(DIR == 9999) %>% distinct(RAW)
+        )
+    ) %>% 
+    
+    # Invert items
+    mutate(
+      DIR = 
+        case_when(
+          DIR == 9999 ~ DIR, # To keep the missing values unchanged
+          trialid %in% paste0(short_name_scale_str, "_", items_to_reverse) ~ (6 - DIR),
+          TRUE ~ DIR
+        )
+    )
     
   # [END ADAPT]: ***************************************************************
   # ****************************************************************************
@@ -88,8 +103,8 @@ prepare_CRS <- function(DF_clean, short_name_scale_str) {
       names_glue = "{trialid}_{.value}") %>% 
     
     # NAs for RAW and DIR items
-    mutate(!!name_RAW_NA := rowSums(is.na(select(., matches("_RAW")))),
-           !!name_DIR_NA := rowSums(is.na(select(., matches("_DIR")))))
+    mutate(!!name_RAW_NA := rowSums(is.na(select(., -matches(paste0(short_name_scale_str, "_", items_to_ignore, "_RAW"))))),
+           !!name_DIR_NA := rowSums(is.na(select(., -matches(paste0(short_name_scale_str, "_", items_to_ignore, "_DIR"))))))
       
   
 
