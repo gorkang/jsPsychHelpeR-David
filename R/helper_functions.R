@@ -498,7 +498,7 @@ auto_reliability = function(DF, short_name_scale = short_name_scale_str, items =
   
   item_selection_string = gsub(".*([0-9]{2,3}).*", "\\1", keep_items)
   
-  return(
+  reliability_output = 
     list(min_rdrop = min_rdrop,
          alpha_initial = alpha_initial,
          alpha_final = alpha_final,
@@ -506,6 +506,9 @@ auto_reliability = function(DF, short_name_scale = short_name_scale_str, items =
          keep_items = keep_items,
          delete_items_warnings = delete_items_warnings,
          item_selection_string = item_selection_string)
-  )
+  
+  write_rds(reliability_output, paste0("output/reliability/", short_name_scale, ".rds"))
+  
+  return(reliability_output)
   
 }
