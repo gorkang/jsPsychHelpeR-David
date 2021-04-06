@@ -17,7 +17,7 @@
   lapply(list.files("./R", full.names = TRUE, pattern = ".R"), source)
   
   # Packages to load
-  main_packages = c("cli", "crayon", "furrr", "patchwork", "quietly", "renv", "tarchetypes", "targets", "testthat")
+  main_packages = c("cli", "crayon", "furrr", "patchwork", "renv", "tarchetypes", "targets", "testthat")
   data_preparation_packages = c("dplyr", "forcats", "here", "janitor", "purrr", "readr", "stringr", "tibble", "tidyr") #"safer", 
   data_analysis_packages = c("broom", "broom.mixed", "DT", "emmeans", "gmodels", "gt", "gtsummary", "irr", "kableExtra", "lme4", "parameters", "performance", "psych", "sjPlot", "skimr") #"report"
   data_visualization_packages = c("ggalluvial", "ggridges")
@@ -35,7 +35,7 @@
   
 # Declare pipeline --------------------------------------------------------
 
-  # source("targets/targets_main.R")
-  source("targets/targets_report.R")
+  source("targets/targets_main.R")
+  # source("targets/targets_report.R")
   
   targets
