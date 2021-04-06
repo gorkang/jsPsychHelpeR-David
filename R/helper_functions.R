@@ -485,7 +485,7 @@ auto_reliability = function(DF, short_name_scale = short_name_scale_str, items =
     keep_items = names(temp_clean[,!(names(temp_clean) %in% delete_items)])
     
     # Temp DF with selected items
-    temp_seleccionados = temp_clean %>% dplyr::select(keep_items)
+    temp_seleccionados = temp_clean %>% dplyr::select(all_of(keep_items))
     
     # Alphas
     alpha_initial = round(quiet_alpha_raw(temp_clean)$result, 3)
