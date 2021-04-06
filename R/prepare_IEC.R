@@ -96,6 +96,18 @@ prepare_IEC <- function(DF_clean, short_name_scale_str) {
     mutate(!!name_RAW_NA := rowSums(is.na(select(., -matches(paste0(short_name_scale_str, "_", items_to_ignore, "_RAW")) & matches("_RAW$")))),
            !!name_DIR_NA := rowSums(is.na(select(., -matches(paste0(short_name_scale_str, "_", items_to_ignore, "_DIR")) & matches("_DIR$")))))
       
+  # Reliability -------------------------------------------------------------
+  
+  REL1 = auto_reliability(DF_wide_RAW, short_name_scale = short_name_scale_str, items = items_DIRd1)
+  REL2 = auto_reliability(DF_wide_RAW, short_name_scale = short_name_scale_str, items = items_DIRd2)
+  REL3 = auto_reliability(DF_wide_RAW, short_name_scale = short_name_scale_str, items = items_DIRd3)
+  
+  items_RELd1 = REL1$item_selection_string
+  items_RELd2 = REL2$item_selection_string
+  items_RELd3 = REL3$item_selection_string
+
+  
+  
     
   # [ADAPT]: Scales and dimensions calculations --------------------------------
   # ****************************************************************************
@@ -108,7 +120,12 @@ prepare_IEC <- function(DF_clean, short_name_scale_str) {
       # Score Dimensions (use 3 digit item numbers)
       !!name_DIRd1 := rowSums(select(., paste0(short_name_scale_str, "_", items_DIRd1, "_DIR")), na.rm = TRUE), 
       !!name_DIRd2 := rowSums(select(., paste0(short_name_scale_str, "_", items_DIRd2, "_DIR")), na.rm = TRUE),
-      !!name_DIRd3 := rowSums(select(., paste0(short_name_scale_str, "_", items_DIRd3, "_DIR")), na.rm = TRUE)
+      !!name_DIRd3 := rowSums(select(., paste0(short_name_scale_str, "_", items_DIRd3, "_DIR")), na.rm = TRUE),
+      
+      # Reliability Dimensions (use 3 digit item numbers)
+      !!name_RELd1 := rowSums(select(., paste0(short_name_scale_str, "_", items_RELd1, "_DIR")), na.rm = TRUE), 
+      !!name_RELd2 := rowSums(select(., paste0(short_name_scale_str, "_", items_RELd2, "_DIR")), na.rm = TRUE),
+      !!name_RELd3 := rowSums(select(., paste0(short_name_scale_str, "_", items_RELd3, "_DIR")), na.rm = TRUE),
       
     )
     

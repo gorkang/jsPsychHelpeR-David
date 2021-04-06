@@ -110,11 +110,17 @@ prepare_CRS <- function(DF_clean, short_name_scale_str) {
 
   # Reliability -------------------------------------------------------------
 
-  # auto_reliability(DF_wide_RAW, items = items_DIRd1)
-  # auto_reliability(DF_wide_RAW, items = items_DIRd2)
-  # auto_reliability(DF_wide_RAW, items = items_DIRd3)
-  # auto_reliability(DF_wide_RAW, items = items_DIRd4)
-  # auto_reliability(DF_wide_RAW, items = items_DIRd5)
+  REL1 = auto_reliability(DF_wide_RAW, items = items_DIRd1)
+  REL2 = auto_reliability(DF_wide_RAW, items = items_DIRd2)
+  REL3 = auto_reliability(DF_wide_RAW, items = items_DIRd3)
+  REL4 = auto_reliability(DF_wide_RAW, items = items_DIRd4)
+  REL5 = auto_reliability(DF_wide_RAW, items = items_DIRd5)
+  
+  items_RELd1 = REL1$item_selection_string
+  items_RELd2 = REL2$item_selection_string
+  items_RELd3 = REL3$item_selection_string
+  items_RELd4 = REL4$item_selection_string
+  items_RELd5 = REL5$item_selection_string
   
   
     
@@ -135,11 +141,11 @@ prepare_CRS <- function(DF_clean, short_name_scale_str) {
       !!name_DIRd5 := rowMeans(select(., paste0(short_name_scale_str, "_", items_DIRd5, "_DIR")), na.rm = TRUE), 
       
       # Reliability Dimensions (use 3 digit item numbers)
-      !!name_RELd1 := rowMeans(select(., paste0(short_name_scale_str, "_", items_DIRd1, "_DIR")), na.rm = TRUE), 
-      !!name_RELd2 := rowMeans(select(., paste0(short_name_scale_str, "_", items_DIRd2, "_DIR")), na.rm = TRUE),
-      !!name_RELd3 := rowMeans(select(., paste0(short_name_scale_str, "_", items_DIRd3, "_DIR")), na.rm = TRUE), 
-      !!name_RELd4 := rowMeans(select(., paste0(short_name_scale_str, "_", items_DIRd4, "_DIR")), na.rm = TRUE), 
-      !!name_RELd5 := rowMeans(select(., paste0(short_name_scale_str, "_", items_DIRd5, "_DIR")), na.rm = TRUE), 
+      !!name_RELd1 := rowMeans(select(., paste0(short_name_scale_str, "_", items_RELd1, "_DIR")), na.rm = TRUE), 
+      !!name_RELd2 := rowMeans(select(., paste0(short_name_scale_str, "_", items_RELd2, "_DIR")), na.rm = TRUE),
+      !!name_RELd3 := rowMeans(select(., paste0(short_name_scale_str, "_", items_RELd3, "_DIR")), na.rm = TRUE), 
+      !!name_RELd4 := rowMeans(select(., paste0(short_name_scale_str, "_", items_RELd4, "_DIR")), na.rm = TRUE), 
+      !!name_RELd5 := rowMeans(select(., paste0(short_name_scale_str, "_", items_RELd5, "_DIR")), na.rm = TRUE), 
       
       # Score Scale
       !!name_DIRt := rowMeans(select(., matches("_DIR$")), na.rm = TRUE)

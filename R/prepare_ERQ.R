@@ -65,7 +65,7 @@ prepare_ERQ <- function(DF_clean, short_name_scale_str) {
 
 
   # Create DF_wide_RAW_DIR -----------------------------------------------------
-  DF_wide_RAW_DIR =
+  DF_wide_RAW =
     DF_long_DIR %>%
     pivot_wider(
       names_from = trialid,
@@ -73,14 +73,28 @@ prepare_ERQ <- function(DF_clean, short_name_scale_str) {
       names_glue = "{trialid}_{.value}") %>%
 
     # NAs for RAW and DIR items
-    mutate(!!name_RAW_NA := rowSums(is.na(select(., matches("_RAW")))),
-           !!name_DIR_NA := rowSums(is.na(select(., matches("_DIR"))))) %>%
+    mutate(!!name_RAW_NA := rowSums(is.na(select(., -matches(paste0(short_name_scale_str, "_", items_to_ignore, "_RAW")) & matches("_RAW$")))),
+           !!name_DIR_NA := rowSums(is.na(select(., -matches(paste0(short_name_scale_str, "_", items_to_ignore, "_DIR")) & matches("_DIR$")))))
+  
 
+  # Reliability -------------------------------------------------------------
 
+  REL1 = auto_reliability(DF_wide_RAW, short_name_scale = short_name_scale_str, items = items_DIRd1)
+  REL2 = auto_reliability(DF_wide_RAW, short_name_scale = short_name_scale_str, items = items_DIRd2)
+  
+  items_RELd1 = REL1$item_selection_string
+  items_RELd2 = REL2$item_selection_string
+
+  RELt = auto_reliability(DF_wide_RAW, short_name_scale = short_name_scale_str)
+  items_RELt = RELt$item_selection_string
+  
+  
+  
   # [ADAPT]: Scales and dimensions calculations --------------------------------
   # ****************************************************************************
     # [USE STANDARD NAMES FOR Scales and dimensions: name_DIRt, name_DIRd1, etc.] Check with: standardized_names(help_names = TRUE)
-
+  DF_wide_RAW_DIR = 
+    DF_wide_RAW %>% 
     mutate(
 
       # Score Dimensions (use 3 digit item numbers)
@@ -88,8 +102,15 @@ prepare_ERQ <- function(DF_clean, short_name_scale_str) {
       !!name_DIRd2 := rowSums(select(., paste0(short_name_scale_str, "_", items_DIRd2, "_DIR")), na.rm = TRUE),
 
       # Score Scale
-      !!name_DIRt := rowSums(select(., matches("_DIR$")), na.rm = TRUE)
-
+      !!name_DIRt := rowSums(select(., matches("_DIR$")), na.rm = TRUE),
+      
+      # Reliability Dimensions (use 3 digit item numbers)
+      !!name_RELd1 := rowSums(select(., paste0(short_name_scale_str, "_", items_RELd1, "_DIR")), na.rm = TRUE), 
+      !!name_RELd2 := rowSums(select(., paste0(short_name_scale_str, "_", items_RELd2, "_DIR")), na.rm = TRUE),
+      
+      # Reliability Scale 
+      !!name_RELt := rowSums(select(., paste0(short_name_scale_str, "_", items_RELt, "_DIR")), na.rm = TRUE)
+      
     )
 
   # [END ADAPT]: ***************************************************************

@@ -101,12 +101,12 @@ prepare_REI40 <- function(DF_clean, short_name_scale_str) {
   REL5 = auto_reliability(DF_wide_RAW, short_name_scale = short_name_scale_str, items = items_DIRd5)
   REL6 = auto_reliability(DF_wide_RAW, short_name_scale = short_name_scale_str, items = items_DIRd6)
     
-  items_RELd1 = items_DIRd1[items_DIRd1 %in% REL1$item_selection_string]
-  items_RELd2 = items_DIRd2[items_DIRd2 %in% REL2$item_selection_string]
-  items_RELd3 = items_DIRd3[items_DIRd3 %in% REL3$item_selection_string]
-  items_RELd4 = items_DIRd4[items_DIRd4 %in% REL4$item_selection_string]
-  items_RELd5 = items_DIRd5[items_DIRd5 %in% REL5$item_selection_string]
-  items_RELd6 = items_DIRd6[items_DIRd6 %in% REL6$item_selection_string]
+  items_RELd1 = REL1$item_selection_string
+  items_RELd2 = REL2$item_selection_string
+  items_RELd3 = REL3$item_selection_string
+  items_RELd4 = REL4$item_selection_string
+  items_RELd5 = REL5$item_selection_string
+  items_RELd6 = REL6$item_selection_string
   
   
   # [ADAPT]: Scales and dimensions calculations --------------------------------
