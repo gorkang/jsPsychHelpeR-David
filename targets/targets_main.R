@@ -18,7 +18,7 @@ targets <- list(
   
   # _Prepare tasks -----------------------------------------------------------
   
-  tar_target(df_SDG, prepare_SDG(DF_clean, short_name_scale_str = "SDG"), priority = 1),
+  tar_target(df_SDG, prepare_SDG(DF_clean, short_name_scale_str = "SDG"), priority = .9),
   
   # Sensitive tasks  
   # tar_files(input_files_sensitive, list.files(path = ".vault/data_vault_5", pattern = "csv", full.names = TRUE)),
