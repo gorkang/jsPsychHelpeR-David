@@ -6,7 +6,7 @@ targets <- list(
   # RAW data
   # tar_files(input_files, list.files(path = "data", pattern = "csv", full.names = TRUE)),
   tar_target(input_files, list.files(path = "data", pattern = "csv", full.names = TRUE)),
-  tar_target(DF_raw, read_data(input_files, anonymize = FALSE)),
+  tar_target(DF_raw, read_data(input_files, anonymize = FALSE, workers = 4)),
   tar_target(tests_DFraw, tests_DF_raw(DF_raw), priority = 1),
   
   # Cleaned data
@@ -89,7 +89,7 @@ targets <- list(
   
   # [TODO] Descriptive Table 1
   # Important: Should we compare DF_analysis with the final data used in each model? 
-  tar_render(descriptives_table1, "doc/descriptives_table1.Rmd"),
+  # tar_render(descriptives_table1, "doc/descriptives_table1.Rmd"),
   
   
   # Models
