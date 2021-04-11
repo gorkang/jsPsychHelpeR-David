@@ -338,7 +338,7 @@ prepare_helper <- function(DF_long_RAW, show_trialid_questiontext = FALSE) {
 
 
 # Create a new prepare_TASK.R file from prepare_TEMPLATE.R replacing TEMPLATE by the short name of the new task
-create_new_task <- function(short_name_task, old_names = FALSE, overwrite = FALSE) {
+create_new_task <- function(short_name_task, overwrite = FALSE) {
   
   #DEBUG
   # short_name_task = "PSS"
@@ -363,22 +363,12 @@ create_new_task <- function(short_name_task, old_names = FALSE, overwrite = FALS
   }
   
   # Line to add in _targets.R 
-  short_name_old = 
-    
-    if (old_names == TRUE) {
-      read_csv("dev/NAMES SCALES.csv", col_types = cols(.default = col_character())) %>% 
-        drop_na(old_name) %>%
-        filter(is.na(done)) %>% 
-        filter(short_name == short_name_task) %>% 
-        pull(old_name)
-    } else {
-      short_name_task
-      }
+  short_name_old = short_name_task
   
   
+  # Output messages ---------------------------------------------------------
   cat(crayon::green("\nLine for _targets.R: \n"))
   cat(paste0('tar_target(df_', short_name_task, ', prepare_', short_name_task, '(DF_clean, short_name_scale_str = "', short_name_old, '")),\n'))
-  
   cat(crayon::green("\nDON'T FORGET TO ADD", crayon::silver(paste0("df_", short_name_task)), "to create_joined() in _targets.R:", crayon::silver("create_joined(..., ", paste0("df_", short_name_task, ")\n\n"))))
   
 }
