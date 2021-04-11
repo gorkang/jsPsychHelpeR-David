@@ -82,8 +82,11 @@ run_sensitive_data <- function(input_files_sensitive, df_SDG, DF_clean) {
     distinct(RUT, .keep_all = TRUE) %>% 
     mutate(fecha_registro = as.Date(datetime)) %>% 
     count(fecha_registro, name = "numero_registros") %>% 
-    ggplot(aes(fecha_registro, numero_registros)) +
+    ungroup() %>% 
+    mutate(suma_total = cumsum(numero_registros)) %>% 
+    ggplot(aes(fecha_registro, suma_total)) +
     geom_line() +
+    geom_bar(aes(fecha_registro, numero_registros), stat = "identity", alpha = .5) +
     geom_point() +
     theme_minimal() +
     scale_x_date(date_breaks = "1 day", guide = guide_axis(angle = 90)) +
@@ -98,8 +101,11 @@ run_sensitive_data <- function(input_files_sensitive, df_SDG, DF_clean) {
     distinct(filename, datetime) %>% 
     mutate(fecha_registro = as.Date(datetime)) %>% 
     count(fecha_registro, name = "numero_registros") %>% 
-    ggplot(aes(fecha_registro, numero_registros)) +
+    ungroup() %>% 
+    mutate(suma_total = cumsum(numero_registros)) %>% 
+    ggplot(aes(fecha_registro, suma_total)) +
     geom_line() +
+    geom_bar(aes(fecha_registro, numero_registros), stat = "identity", alpha = .5) +
     geom_point() +
     theme_minimal() +
     scale_x_date(date_breaks = "1 day", guide = guide_axis(angle = 90)) +
@@ -115,8 +121,11 @@ run_sensitive_data <- function(input_files_sensitive, df_SDG, DF_clean) {
     distinct(filename, datetime) %>% 
     mutate(fecha_registro = as.Date(datetime)) %>% 
     count(fecha_registro, name = "numero_registros") %>% 
-    ggplot(aes(fecha_registro, numero_registros)) +
+    ungroup() %>% 
+    mutate(suma_total = cumsum(numero_registros)) %>% 
+    ggplot(aes(fecha_registro, suma_total)) +
     geom_line() +
+    geom_bar(aes(fecha_registro, numero_registros), stat = "identity", alpha = .5) +
     geom_point() +
     theme_minimal() +
     scale_x_date(date_breaks = "1 day", guide = guide_axis(angle = 90)) +
