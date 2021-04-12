@@ -12,10 +12,31 @@ read_data <- function(input_files, anonymize = FALSE, save_output = FALSE, worke
   # Read all files
   if (workers > 1) {
     future::plan(multisession, workers = workers)
-    DF_raw_read = furrr::future_map_dfr(input_files %>% set_names(basename(.)), data.table::fread, .id = "filename") %>% as_tibble()
-    # DF_raw_read = furrr::future_map_dfr(input_files %>% set_names(basename(.)), read_csv, .id = "filename") %>% as_tibble()
+    # DF_raw_read = furrr::future_map_dfr(input_files %>% set_names(basename(.)), data.table::fread, .id = "filename", encoding = 'UTF-8') %>% as_tibble()
+    DF_raw_read = furrr::future_map_dfr(input_files %>% set_names(basename(.)), read_csv, .id = "filename", col_types = cols(
+      view_history = col_character(),
+      rt = col_double(),
+      trialid = col_character(),
+      trial_type = col_character(),
+      trial_index = col_double(),
+      time_elapsed = col_double(),
+      internal_node_id = col_character(),
+      stimulus = col_character(),
+      responses = col_character()
+    ))
   } else {
-    DF_raw_read = purrr::map_dfr(input_files %>% set_names(basename(.)), data.table::fread, .id = "filename") %>% as_tibble()
+    # DF_raw_read = purrr::map_dfr(input_files %>% set_names(basename(.)), data.table::fread, .id = "filename") %>% as_tibble()
+    DF_raw_read = purrr::map_dfr(input_files %>% set_names(basename(.)), read_csv, .id = "filename", col_types = cols(
+      view_history = col_character(),
+      rt = col_double(),
+      trialid = col_character(),
+      trial_type = col_character(),
+      trial_index = col_double(),
+      time_elapsed = col_double(),
+      internal_node_id = col_character(),
+      stimulus = col_character(),
+      responses = col_character()
+    ))
   }
   
   DF_raw =
@@ -25,8 +46,15 @@ read_data <- function(input_files, anonymize = FALSE, save_output = FALSE, worke
              sep = c("_"), remove = FALSE) %>% 
     mutate(
       id = gsub("(*.)\\.csv", "\\1", id), # userID
-      stimulus = gsub('\\{""Q0"":""|""\\}', '', stimulus), # Clean stimulus
-      responses = gsub('\\{""Q0"":""|""\\}', '', responses), # Clean responses [REMEMBER: Only works with one response per screen]
+      
+      # Data table
+      # stimulus = gsub('\\{""Q0"":""|""\\}', '', stimulus), # Clean stimulus
+      # responses = gsub('\\{""Q0"":""|""\\}', '', responses), # Clean responses [REMEMBER: Only works with one response per screen]
+      
+      #Readr
+      stimulus = gsub('\\{"Q0":"|"\\}', '', stimulus), # Clean stimulus
+      responses = gsub('\\{"Q0":"|"\\}', '', responses), # Clean responses [REMEMBER: Only works with one response per screen]
+      
       responses = gsub('&nbsp;|\u00A0', '', responses) # Remove non-breaking space (tools::showNonASCII(DF_raw$responses))
       )
       # THIS plus the rowwise and mutate below for multiple answers. ADDS a lot of time        
