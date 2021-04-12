@@ -25,7 +25,7 @@ read_data <- function(input_files, anonymize = FALSE, save_output = FALSE, worke
              sep = c("_"), remove = FALSE) %>% 
     mutate(
       id = gsub("(*.)\\.csv", "\\1", id), # userID
-      stimulus = gsub('\\{"Q0":"|"\\}', '', stimulus), # Clean stimulus
+      stimulus = gsub('\\{""Q0"":""|""\\}', '', stimulus), # Clean stimulus
       responses = gsub('\\{""Q0"":""|""\\}', '', responses), # Clean responses [REMEMBER: Only works with one response per screen]
       responses = gsub('&nbsp;|\u00A0', '', responses) # Remove non-breaking space (tools::showNonASCII(DF_raw$responses))
       )
