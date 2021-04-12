@@ -3,9 +3,10 @@
 
   # The targets and tarchetypes are not yet in CRAN. 
   if (!require('remotes')) install.packages('remotes'); library('remotes')
-  remotes::install_github("wlandau/targets")
-  remotes::install_github("wlandau/tarchetypes")
+  if (!require('targets')) install.packages('targets'); library('targets')
+  if (!require('tarchetypes')) install.packages('tarchetypes'); library('tarchetypes')
   remotes::install_github("gadenbuie/shrtcts")
+
 
   
 # Make sure all packages are present --------------------------------------
