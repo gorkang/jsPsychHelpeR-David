@@ -467,7 +467,7 @@ auto_reliability = function(DF, short_name_scale = short_name_scale_str, items =
     delete_items = NULL
     keep_items = names(temp_clean)
     
-    cat(crayon::green("\nNo items with r.drop <= ", min_rdrop), "|| alpha: ", alpha_initial, "\n\n")
+    cat(crayon::green("\nNo items with r.drop <= ", min_rdrop), "|| alpha: ", alpha_initial, "\n")
     
   } else {
   
