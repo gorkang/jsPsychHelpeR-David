@@ -2,20 +2,24 @@
 ##'
 ##' 
 ##'
-##' @title
-##' @param input_files
+##' @title read_data()
+##'
+##' @param anonymize TODO
+##' @param save_output should save output?
+##' @param workers number of threads for data.table::fread
+##' @param input_files files to read
+##'
 ##' @return
 ##' @author gorkang
 ##' @export
 read_data <- function(input_files, anonymize = FALSE, save_output = FALSE, workers = 1) {
   
+  # DEBUG
+  # debug_function(read_data)
+  
   # Read all files
-  if (workers > 1) {
-    future::plan(multisession, workers = workers)
-    DF_raw_read = furrr::future_map_dfr(input_files %>% set_names(basename(.)), data.table::fread, .id = "filename", encoding = 'UTF-8') %>% as_tibble()
-  } else {
-    DF_raw_read = purrr::map_dfr(input_files %>% set_names(basename(.)), data.table::fread, .id = "filename", encoding = 'UTF-8') %>% as_tibble()
-  }
+  DF_raw_read = purrr::map_dfr(input_files %>% set_names(basename(.)), data.table::fread, .id = "filename", encoding = 'UTF-8', nThread = as.numeric(workers)) %>% as_tibble()
+  
   
   DF_raw =
     DF_raw_read %>% 
