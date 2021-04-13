@@ -1,3 +1,3 @@
-"view_history","rt","trialid","trial_type","trial_index","time_elapsed","internal_node_id","url"
-"[{""page_index"":0,""viewing_time"":7781}]","7781","Instructions","instructions","0","7782","0.0-0.0",""
-"","162059.92499995045","","external-html","1","170125","0.0-1.0","html/consent-huepe.html"
+view_history,rt,trialid,trial_type,trial_index,time_elapsed,internal_node_id,url
+"[{""page_index"":0,""viewing_time"":7781}]",7781,Instructions,instructions,0,7782,0.0-0.0,
+,162059.92499995045,Consent_01,external-html,1,170125,0.0-1.0,html/consent-huepe.html
