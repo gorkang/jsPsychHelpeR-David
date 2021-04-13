@@ -15,6 +15,8 @@
 
   # Source all /R files
   lapply(list.files("./R", full.names = TRUE, pattern = ".R"), source)
+  lapply(list.files("./R_tasks/", full.names = TRUE, pattern = ".R"), source)
+
   
   # Packages to load
   main_packages = c("cli", "crayon", "furrr", "patchwork", "renv", "tarchetypes", "targets", "testthat")

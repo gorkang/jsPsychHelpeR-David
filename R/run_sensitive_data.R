@@ -5,8 +5,7 @@
 run_sensitive_data <- function(input_files_sensitive, df_SDG, DF_clean) {
 
   # DEBUG
-  # targets::tar_load("df_SDG")
-  # targets::tar_load("input_files_sensitive")
+  # debug_function("run_sensitive_data")
   # input_files_sensitive = list.files(path = ".vault/data_vault_5", pattern="csv", full.names = TRUE)
 
 

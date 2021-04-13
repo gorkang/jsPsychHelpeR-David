@@ -17,12 +17,14 @@
 prepare_AIM <- function(DF_clean_sensitive, DF_DICCIONARY_id, short_name_scale_str) {
 
   # DEBUG
-  # debug_function(prepare_AIM)
-  # DF_clean = DF_clean_sensitive
+  # short_name_scale_str = "AIM"
+  
+  # debug_function(prepare_AIM) # Will not work. Will need to open run_sensitive_data.R and run part of it to get DF_clean_sensitive and DF_DICCIONARY_id
+  # rstudioapi::navigateToFile("R/run_sensitive_data.R")
 
   
   # OUTSIDE FILES -----------------------------------------------------------
-  DF_lookup = read_csv("R/prepare_AIM-lookup.csv", 
+  DF_lookup = read_csv("R_tasks/prepare_AIM-lookup.csv", 
                        col_types = 
                          cols(
                            AIM_01_DIR = col_double(),
@@ -79,6 +81,7 @@ prepare_AIM <- function(DF_clean_sensitive, DF_DICCIONARY_id, short_name_scale_s
           RAW == "Alto ejecutivo (gerente general o gerente de área o sector) de empresa privadas o pública- Director o dueño de grandes empresa- Alto directivo del poder ejecutivo, de los cuerpos legislativos y la administración pública (incluye oficiales de FFAA y Carabineros)." ~ 9,
           RAW == "Otros grupos no identificados (incluye rentistas, incapacitados, etc.)" ~ 10,
           
+          # TODO: These give WARNINGS -----
           trialid == "AIM_03" & as.numeric(RAW) == 0 ~ 1, # ESTA OPCION NO DEBERIA SER POSIBLE
           trialid == "AIM_03" & as.numeric(RAW) == 1 ~ 1,
           trialid == "AIM_03" & as.numeric(RAW) == 2 ~ 2,

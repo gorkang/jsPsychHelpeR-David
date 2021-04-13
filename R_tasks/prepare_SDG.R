@@ -59,7 +59,8 @@ prepare_SDG <- function(DF_clean, short_name_scale_str) {
       DIR =
         case_when(
           
-          trialid %in% c("SDG_01") ~ as.numeric(RAW),
+          # TODO: This give WARNINGS -----
+          trialid %in% c("SDG_01") ~ as.numeric(RAW), # Gives warning
           
           trialid == "SDG_02" & RAW == "Casado (a)" ~ 1,
           trialid == "SDG_02" & RAW == "Conviviente" ~ 2,
@@ -83,7 +84,8 @@ prepare_SDG <- function(DF_clean, short_name_scale_str) {
           trialid == "SDG_04" & RAW == "Si tengo registro." ~ 1,
           trialid == "SDG_04" & RAW == "No tengo registro." ~ 2,
           
-          trialid == "SDG_05" ~ as.numeric(RAW),
+          # TODO: This give WARNINGS -----
+          trialid == "SDG_05" ~ as.numeric(RAW), # Gives warning
           
           trialid == "SDG_06" & RAW == "Trabaja a tiempo completo" ~ 1,
           trialid == "SDG_06" & RAW == "Trabaja a tiempo parcial" ~ 2,

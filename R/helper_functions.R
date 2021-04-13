@@ -221,7 +221,8 @@ debug_function <- function(name_function) {
   if (substitute(name_function) != "name_function") name_function = substitute(name_function) #if (!interactive()) is so substitute do not overwrite name_function when in interactive mode
   
   # Parses _targets.R
-  code <- parse("targets/targets_main.R")
+  code <- parse("_targets.R")
+  if (file.exists("targets/targets_main.R")) code <- c(code, parse("targets/targets_main.R"))
   # code <- parse("_targets.R")
   
   # Finds the chunk where name_function is, and cleans the "\"
