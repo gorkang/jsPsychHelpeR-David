@@ -105,7 +105,7 @@ prepare_IEC <- function(DF_clean, short_name_scale_str) {
   items_RELd1 = REL1$item_selection_string
   items_RELd2 = REL2$item_selection_string
   items_RELd3 = REL3$item_selection_string
-
+  cat("\n\n")
   
   
     

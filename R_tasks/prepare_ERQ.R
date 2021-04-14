@@ -87,7 +87,7 @@ prepare_ERQ <- function(DF_clean, short_name_scale_str) {
 
   RELt = auto_reliability(DF_wide_RAW, short_name_scale = short_name_scale_str)
   items_RELt = RELt$item_selection_string
-  
+  cat("\n\n")
   
   
   # [ADAPT]: Scales and dimensions calculations --------------------------------

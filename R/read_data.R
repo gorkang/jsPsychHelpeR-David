@@ -1,6 +1,5 @@
 ##' Read raw data and prepare a global DF
 ##'
-##' 
 ##'
 ##' @title read_data()
 ##'
@@ -16,11 +15,12 @@ read_data <- function(input_files, anonymize = FALSE, save_output = FALSE, worke
   
   # DEBUG
   # debug_function(read_data)
+
   
   # Read all files
   DF_raw_read = purrr::map_dfr(input_files %>% set_names(basename(.)), data.table::fread, .id = "filename", encoding = 'UTF-8', nThread = as.numeric(workers)) %>% as_tibble()
-  
-  
+
+  # Extract information from filename
   DF_raw =
     DF_raw_read %>% 
     separate(col = filename, 
@@ -28,15 +28,8 @@ read_data <- function(input_files, anonymize = FALSE, save_output = FALSE, worke
              sep = c("_"), remove = FALSE) %>% 
     mutate(
       id = gsub("(*.)\\.csv", "\\1", id), # userID
-      
-      # Data table
       stimulus = gsub('\\{""Q0"":""|""\\}', '', stimulus), # Clean stimulus
       responses = gsub('\\{""Q0"":""|""\\}', '', responses), # Clean responses [REMEMBER: Only works with one response per screen]
-      
-      #Readr
-      # stimulus = gsub('\\{"Q0":"|"\\}', '', stimulus), # Clean stimulus
-      # responses = gsub('\\{"Q0":"|"\\}', '', responses), # Clean responses [REMEMBER: Only works with one response per screen]
-      
       responses = gsub('&nbsp;|\u00A0', '', responses) # Remove non-breaking space (tools::showNonASCII(DF_raw$responses))
       )
       # THIS plus the rowwise and mutate below for multiple answers. ADDS a lot of time        
@@ -51,7 +44,6 @@ read_data <- function(input_files, anonymize = FALSE, save_output = FALSE, worke
     
     
   # Output of function ---------------------------------------------------------
-    
     return(DF_raw)
   
 }

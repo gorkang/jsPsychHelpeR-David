@@ -1,5 +1,8 @@
 testthat::test_that('Check DF_joined', {
 
+  # DEBUG
+  # targets::tar_load(c(DF_joined, DICCIONARY_tasks))
+  
   # Name of test (should reflect the name of the file) ----------------------
   
   name_of_test = "DF_joined"

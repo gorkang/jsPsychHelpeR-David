@@ -1,5 +1,8 @@
 testthat::test_that('Check if any of the items appear more or less than the other items for each given test', {
 
+  # DEBUG
+  # targets::tar_load(c(DF_clean))
+  
   # testthat::local_edition(3)
   
   # Name of test (should reflect the name of the file) ----------------------

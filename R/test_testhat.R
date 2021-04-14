@@ -9,6 +9,9 @@
 ##' @export
 test_testhat <- function(input_files_automatic_tests_str, ...) {
 
+  # DEBUG
+  # debug_function(test_testhat)
+  
   # Load targets objects used in tests --------------------------------------
   
   argnames <- sys.call()
@@ -36,6 +39,10 @@ test_testhat <- function(input_files_automatic_tests_str, ...) {
 
   # Run all the tests ------------------------------------------------------
 
+  # test_files = list.files("tests/testthat/", full.names = TRUE)
+  # test_files[3]
+  # testthat::test_file(test_files[1])
+  
   testthat::test_dir(path = here::here("tests/testthat/"), env = .GlobalEnv, stop_on_failure = FALSE, reporter = ProgressReporter)# ProgressReporter StopReporter
   
   cat(crayon::blue(crayon::underline(crayon::bold(paste0("\n\n[END tests]:", paste(rep(" ", 65), collapse = " ")), " \n\n\n"))))

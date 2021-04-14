@@ -139,7 +139,7 @@ run_sensitive_data <- function(input_files_sensitive, df_SDG, DF_clean) {
   
   
   # Report ------------------------------------------------------------------
-  cat(crayon::yellow("Preparando report_candidatos...\n"))
+  cat(crayon::yellow("\nPreparando report_candidatos..."))
   rmarkdown::render(".vault/doc/report_candidatos.Rmd", "html_document", quiet = TRUE, clean = TRUE, envir = new.env())
   
  return(DF_AIM_raw)

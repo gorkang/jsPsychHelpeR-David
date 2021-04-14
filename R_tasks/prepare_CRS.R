@@ -121,6 +121,7 @@ prepare_CRS <- function(DF_clean, short_name_scale_str) {
   items_RELd3 = REL3$item_selection_string
   items_RELd4 = REL4$item_selection_string
   items_RELd5 = REL5$item_selection_string
+  cat("\n\n")
   
   
     

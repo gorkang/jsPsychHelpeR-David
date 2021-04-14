@@ -100,6 +100,7 @@ prepare_SASS <- function(DF_clean, short_name_scale_str) {
   
   RELt = auto_reliability(DF_wide_RAW, short_name_scale = short_name_scale_str)
   items_RELt = c("02", "03", RELt$item_selection_string)
+  cat("\n\n")
   # REVIEW: EN ESTE CASO, los items 02 y 03 NO ENTRAN EN alphadrop_me() pq tienen NA's, pero SI los incluimos aqui (???) ------
   
   
