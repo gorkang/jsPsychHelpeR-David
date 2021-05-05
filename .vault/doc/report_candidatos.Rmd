@@ -51,7 +51,7 @@ cuota_Ca = cuota_total / subgrupos_edad_sexo * (1/4) # 1 de los 4 grupos es cont
 cuota_Cc = cuota_total / subgrupos_edad_sexo * (1/4) # 1 de los 4 grupos es control Cc
 cuota_EX = cuota_total / subgrupos_edad_sexo * (2/4) # 2 de los 4 grupos son experimental EX
 
-DF_raw = 
+DF_raw_processed = 
   df_FORM_RAW %>% 
   left_join(df_AIM, by = "RUT") %>% 
   select(id, RUT, AIM_DIRt, FORM5_00_RAW, FORM5_02_DIR, FORM5_03_DIR, FORM5_04_DIR, FORM5_05_DIR, FORM5_06_DIR, FORM5_07_DIR, FORM5_08_DIR) %>% 
@@ -91,11 +91,11 @@ DF_raw =
              TRUE ~ "OK"))
 
 # REVISAR --------------------------------------------------------
-DFXXX = DF_raw %>% filter(is.na(RUT))
+DFXXX = DF_raw_processed %>% filter(is.na(RUT))
 # ----------------------------------------------------------------
 
 DF = 
-  DF_raw %>% 
+  DF_raw_processed %>% 
   # Filter out by age, sex and socioeconomic group
   filter(sexo != "No binario") %>%
   filter(edad != "demasiado viejo" & edad != "demasiado joven") %>% 
@@ -396,6 +396,8 @@ DT::datatable(DFXXX,
 
 DF_raw = read_rds(here::here("output/data/DF_raw.rds"))
 
+DF_id_grupo = DF_raw_processed %>% drop_na(id) %>% select(id, grupo)
+
 all_tasks = DF_raw %>% distinct(experimento) %>% pull(experimento)
 
 RUT_DF = 
@@ -420,7 +422,8 @@ summary_table_RUT =
             .groups = "keep") %>% 
   mutate(missing = paste(all_tasks[!all_tasks %in% (strsplit(tasks, split = ", ") %>% unlist())], collapse = ", ")) %>% 
   left_join(RUT_DF, by = "id") %>% 
-  select(id, RUT, everything())
+  select(id, RUT, everything()) %>% 
+  left_join(DF_id_grupo, by = "id")
 
 DT::datatable(summary_table_RUT, filter = 'top', options = list(dom = 'ltip', pageLength = 10))
 
