@@ -19,9 +19,9 @@
 
   
   # Packages to load
-  main_packages = c("cli", "crayon", "furrr", "patchwork", "renv", "tarchetypes", "targets", "testthat")
-  data_preparation_packages = c("data.table", "dplyr", "forcats", "here", "janitor", "purrr", "readr", "stringr", "tibble", "tidyr") #"safer", 
-  data_analysis_packages = c("broom", "broom.mixed", "DT", "emmeans", "gmodels", "gt", "gtsummary", "irr", "kableExtra", "lme4", "parameters", "performance", "psych", "sjPlot", "skimr") #"report"
+  main_packages = c("crayon", "patchwork", "renv", "tarchetypes", "targets", "testthat")
+  data_preparation_packages = c("data.table", "dplyr", "forcats", "here", "janitor", "purrr", "readr", "stringr", "tibble", "tidyr")
+  data_analysis_packages = c("broom", "broom.mixed", "DT", "emmeans", "gmodels", "gt", "gtsummary", "irr", "kableExtra", "lme4", "parameters", "performance", "psych", "sjPlot", "skimr")
   data_visualization_packages = c("ggalluvial", "ggridges")
   non_declared_dependencies = c("qs", "visNetwork", "webshot", "performance", "bs4Dash", "pingr", "shiny", "shinycssloaders")
   extra_packages = c("shrtcts", "httr")
