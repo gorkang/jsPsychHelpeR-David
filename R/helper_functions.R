@@ -223,6 +223,7 @@ debug_function <- function(name_function) {
   # Parses _targets.R
   code <- parse("_targets.R")
   if (file.exists("targets/targets_main.R")) code <- c(code, parse("targets/targets_main.R"))
+  if (file.exists("targets/targets_report.R")) code <- c(code, parse("targets/targets_report.R"))
   # code <- parse("_targets.R")
   
   # Finds the chunk where name_function is, and cleans the "\"
