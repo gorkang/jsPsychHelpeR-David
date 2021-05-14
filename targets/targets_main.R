@@ -89,7 +89,9 @@ targets <- list(
   
   # [TODO] Descriptive Table 1
   # Important: Should we compare DF_analysis with the final data used in each model? 
-  # tar_render(descriptives_table1, "doc/descriptives_table1.Rmd"),
+  # tar_render(descriptives_table1, "doc/descriptives_table1.Rmd",
+  #            output_file = paste0("../output/reports/descriptives_table1.html")),
+
   
   
   # Models
@@ -110,7 +112,7 @@ targets <- list(
   # _Tests -------------------------------------------------------------------
   
   # [REMEMBER]: Have to manually put every target we have a test for here (except the automatic tests: 'input_files_automatic_tests_str' takes care of that)
-  tar_target(input_files_automatic_tests_str, list.files(path = "_targets/objects/", pattern="df_*", full.names = FALSE, ignore.case = FALSE)),
+  tar_target(input_files_automatic_tests_str, list.files(path = "_targets/objects/", pattern = "df_*", full.names = FALSE, ignore.case = FALSE)),
   
   tar_target(TESTS, test_testhat(input_files_automatic_tests_str = input_files_automatic_tests_str,
                                  input_files,
@@ -118,12 +120,28 @@ targets <- list(
                                  DF_clean,
                                  DICCIONARY_tasks,
                                  DF_joined
-  )
-  ),
+                                 )),
   
   # Report ------------------------------------------------------------------
   
   # Automatic report
-  tar_render(report_DF_clean, "doc/report_DF_clean.Rmd")
+  tar_render(report_DF_clean, "doc/report_DF_clean.Rmd",
+             output_file = paste0("../output/reports/report_DF_clean.html")),
+  
+  # Progress report
+  tar_render(report_PROGRESS_5, path = "doc/report_PROGRESS.Rmd",
+             params = list(input_files_vector = input_files_sensitive,
+                           pid_PROGRESS = 5,
+                           last_task = "AIM",
+                           goal = 1500),
+             output_file = paste0("../output/reports/report_PROGRESS_", 5 , ".html")),
+  
+  tar_render(report_PROGRESS_1, path = "doc/report_PROGRESS.Rmd",
+             params = list(input_files_vector = input_files,
+                           pid_PROGRESS = 1,
+                           last_task = "Bank",
+                           goal = 500),
+             output_file = paste0("../output/reports/report_PROGRESS_", 1 , ".html"))
+  
   
 )

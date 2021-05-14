@@ -504,3 +504,111 @@ auto_reliability = function(DF, short_name_scale = short_name_scale_str, items =
   return(reliability_output)
   
 }
+
+
+
+#' show_progress_pid
+#'
+#' Show progress of data collection of a project
+#'
+#' @param pid
+#' @param files_vector
+#' @param last_task
+#' @param goal
+#'
+#' @return
+#' @export
+#'
+#' @examples
+show_progress_pid <- function(pid = 3, files_vector, last_task = "Goodbye", goal = 100, DEBUG = FALSE) {
+  
+  # DEBUG
+  # pid = 3
+  # files_vector = input_files_sensitive
+  # last_task = "COVIDCONTROL"
+  # goal = 850
+  # DEBUG = TRUE
+  
+  # Prepare data ------------------------------------------------------------
+  
+  files_csv = files_vector
+  
+  DF_files =
+    tibble(filename = basename(files_csv)) %>%
+    tidyr::separate(col = filename,
+                    into = c("project", "experimento", "version", "datetime", "id"),
+                    sep = c("_"), remove = FALSE) %>%
+    mutate(id = gsub("(*.)\\.csv", "\\1", id))
+  
+  DF_progress =
+    DF_files %>%
+    filter(experimento == last_task) %>%#"COVIDCONTROL"
+    distinct(id, .keep_all = TRUE) %>%
+    distinct(filename, datetime) %>%
+    mutate(fecha_registro = as.Date(datetime)) %>%
+    count(fecha_registro, name = "numero_registros") %>%
+    ungroup() %>%
+    mutate(suma_total = cumsum(numero_registros),
+           days_since_start = as.integer(fecha_registro - min(fecha_registro)),
+           rate = round(suma_total / days_since_start, 2)) %>% 
+    arrange(desc(fecha_registro))
+  
+  
+  # Plot --------------------------------------------------------------------
+  
+  PLOT_progress =
+    DF_progress %>%
+    ggplot(aes(fecha_registro, suma_total)) +
+    geom_line() +
+    geom_bar(aes(fecha_registro, numero_registros), stat = "identity", alpha = .5) +
+    geom_point() +
+    geom_hline(yintercept = goal, linetype = "dashed", color = "grey") +
+    theme_minimal(base_size = 16) +
+    scale_x_date(date_breaks = "1 day", guide = guide_axis(angle = 90)) +
+    scale_y_continuous(n.breaks = 10) +
+    labs(title = paste0("Protocolo " , pid, " completado"),
+         subtitle = paste0("Ultimo dato: ", as.Date(max(DF_files$datetime))),
+         caption = paste0("Last test used: ", last_task, ". Goal: ", goal, " participants"), x = "")
+  
+  
+  # Calculate output vars
+  suma_total_ahora = max(DF_progress$suma_total)
+  suma_total_yesterday = DF_progress %>% filter(fecha_registro <= Sys.Date() - 1) %>% pull(suma_total) %>% first()
+  suma_total_lastweek = DF_progress %>% filter(fecha_registro <= Sys.Date() - 7) %>% pull(suma_total) %>% first()
+  if (is.na(suma_total_lastweek)) suma_total_lastweek = 0
+  DIFF_yesterday = suma_total_ahora - suma_total_yesterday
+  DIFF_lastweek = suma_total_ahora - suma_total_lastweek
+  DAYS = as.integer(max(DF_progress$fecha_registro) - min(DF_progress$fecha_registro))
+  rate_per_day = round(suma_total_ahora/DAYS, 1)
+  rate_yesterday = round(DIFF_yesterday / 1, 1)
+  rate_lastweek = round(DIFF_lastweek / 7, 1)
+  days_to_goal = round((goal - suma_total_ahora)/rate_per_day, 0)
+  days_to_goal_yesterdayrate = round((goal - suma_total_ahora)/rate_yesterday, 0)
+  days_to_goal_lastweekrate = round((goal - suma_total_ahora)/rate_lastweek, 0)
+  
+  
+  TABLE = tibble(last_n_days = c(1, 7, DAYS),
+                 new_participants = c(DIFF_yesterday, DIFF_lastweek, suma_total_ahora),
+                 participants_x_day = c(rate_yesterday, rate_lastweek , rate_per_day),
+                 days_to_goal = c(days_to_goal_yesterdayrate, days_to_goal_lastweekrate, days_to_goal))  
+  
+  
+  # OUTPUT ------------------------------------------------------------------
+  
+  if (DEBUG == TRUE) {
+    
+    cat(crayon::green(
+      paste0("Data collection started in ", min(DF_progress$fecha_registro), ". Our goal is ", goal, " participants.\n",
+             "In the last [1 / 7 / ", DAYS, "] days we got [+", DIFF_yesterday, " / +", DIFF_lastweek, " / +", suma_total_ahora, "] new people.\n",
+             "In the last [1 / 7 / ", DAYS, "] days we got [", rate_yesterday, " / ", rate_lastweek ," / ", rate_per_day, "] people per day.\n",
+             "Will take [", days_to_goal_yesterdayrate, " / ", days_to_goal_lastweekrate ," / ", days_to_goal, "] more days to reach the goal.")))
+    
+  }
+  
+  OUTPUT = list(TABLE = TABLE, 
+                DF_progress = DF_progress,
+                PLOT_progress = PLOT_progress)
+  
+  return(OUTPUT)
+  
+}
